@@ -1,32 +1,39 @@
 import { Carousel } from "@/src/features/home/components/Carousel";
-import Image from "next/image";
 
 export default function Home() {
   const carouselImages = [
-    { src: "/images/assets/coral1_green.webp", alt: "Green Coral" },
-    { src: "/images/assets/coral2_pink.webp", alt: "Pink Coral" },
-    { src: "/images/assets/coral1_orange.webp", alt: "Orange Coral" },
-    { src: "/images/assets/coral2_red.webp", alt: "Red Coral" },
-    { src: "/images/assets/circle_yellow.webp", alt: "Yellow Circle" },
-    { src: "/images/logo/logo_main.webp", alt: "Make It With Love Logo" },
+    { src: "/images/home/carousel/dtf2.webp", alt: "DTF" },
+    { src: "/images/home/carousel/dtf3.webp", alt: "DTF" },
+    { src: "/images/home/carousel/paint1.webp", alt: "Paint" },
+    { src: "/images/home/carousel/paint2.webp", alt: "Paint" },
+    { src: "/images/home/carousel/pottery1.webp", alt: "Pottery" },
+    { src: "/images/home/carousel/pottery2.webp", alt: "Pottery" },
+    { src: "/images/home/carousel/pottery3.webp", alt: "Pottery" },
+    { src: "/images/home/carousel/teapot1.webp", alt: "Teapot" },
+    { src: "/images/home/carousel/teapot2.webp", alt: "Teapot" },
+    { src: "/images/home/carousel/wood1.webp", alt: "Wood" },
+    { src: "/images/home/carousel/wood2.webp", alt: "Wood" }
   ];
 
   return (
-    <main className="flex-1 flex flex-col items-center justify-center p-8 sm:p-12 md:p-24 w-full">
-      <div className="max-w-6xl w-full flex flex-col gap-12 items-center text-center">
-        {/* Title */}
-        <section className="flex flex-col gap-4 max-w-3xl items-center animate-fade-in">
-          <h1 className="text-6xl sm:text-7xl md:text-8xl font-family-papernotes text-foreground drop-shadow-sm">
-            Make It With Love
-          </h1>
-          <p className="text-lg sm:text-xl text-foreground/80 mt-4 max-w-2xl font-sans">
-            A beautiful place to share your passion, creativity, and everything crafted with pure joy and love.
-          </p>
+    <main className="flex-1 flex flex-col items-center justify-center p-4 sm:p-8 md:p-12 w-full min-h-[calc(100vh-100px)]">
+      <div className="max-w-7xl w-full flex flex-col lg:flex-row gap-8 lg:gap-16 items-center">
+        {/* Left side: Carousel */}
+        <section className="w-full lg:w-1/2 relative animate-fade-in [mask-image:linear-gradient(to_right,transparent_0%,black_25%,black_75%,transparent_100%)]">
+          <Carousel images={carouselImages} autoScrollInterval={5} />
         </section>
 
-        {/* Carousel */}
-        <section className="w-full mt-8">
-          <Carousel images={carouselImages} />
+        {/* Right side: Title, Description, Button */}
+        <section className="w-full lg:w-1/2 flex flex-col gap-6 items-center lg:items-start text-center lg:text-left animate-fade-in">
+          <h1 className="text-5xl sm:text-7xl md:text-8xl lg:text-7xl font-family-papernotes text-foreground drop-shadow-sm leading-none">
+            Make It With Love
+          </h1>
+          <p className="text-lg sm:text-xl text-foreground/80 max-w-xl font-sans">
+            The ultimate creative playground for young artists! We believe that the best things in life are handmade. Our platform provides a curated library of high-quality, kid-friendly video tutorials that turn screen time into &quot;hands-on&quot; time.
+          </p>
+          <button className="mt-4 px-10 py-4 bg-[var(--color-pink)] hover:bg-[var(--color-red)] text-white font-bold text-3xl rounded-full hover:scale-105 transition-all shadow-xl font-family-papernotes tracking-widest leading-none flex items-center justify-center">
+            lets learn!!
+          </button>
         </section>
       </div>
     </main>
