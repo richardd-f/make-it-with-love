@@ -22,13 +22,12 @@ export const CoursesExplorer = () => {
   const [sort, setSort] = useState("popular");
 
   const [isLoading, setIsLoading] = useState(true);
-  const [isAppending, setIsAppending] = useState(false);
+
 
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const fetchCourses = useCallback(async (currentFilters: Partial<ICourseFilters>, currentSort: string, currentPage: number, append: boolean = false) => {
-    if (append) setIsAppending(true);
-    else setIsLoading(true);
+    if (!append) setIsLoading(true);
 
     try {
       const res = await getCourses(currentFilters, currentSort, currentPage, 20);
@@ -43,7 +42,6 @@ export const CoursesExplorer = () => {
       console.error(err);
     } finally {
       setIsLoading(false);
-      setIsAppending(false);
     }
   }, []);
 
@@ -61,13 +59,7 @@ export const CoursesExplorer = () => {
     };
   }, [filters, sort, fetchCourses]);
 
-  const handleLoadMore = () => {
-    if (page < totalPages) {
-      const nextPage = page + 1;
-      setPage(nextPage);
-      fetchCourses(filters, sort, nextPage, true);
-    }
-  };
+
 
   const handleClearFilters = () => {
     setFilters({});
@@ -80,7 +72,7 @@ export const CoursesExplorer = () => {
   };
 
   // Pagination logic
-  let visiblePages = [];
+  const visiblePages = [];
   for (let i = Math.max(1, page - 2); i <= Math.min(totalPages, page + 2); i++) {
     visiblePages.push(i);
   }
@@ -205,7 +197,7 @@ export const CoursesExplorer = () => {
 
                     {/* The Slanted Course Card */}
                     <div className={`w-full transition-transform duration-500 group-hover:-translate-y-6 ${rotateClass} z-10`}>
-                      <CourseCard course={course} index={i} />
+                      <CourseCard course={course} />
                     </div>
                   </div>
                 );

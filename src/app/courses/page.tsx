@@ -5,6 +5,8 @@ export const metadata = {
 
 import { CoursesExplorer } from "../../features/courses/components/courses-explorer";
 
+import Link from "next/link";
+
 export default function CoursesPage() {
   return (
     <div className="min-h-screen bg-[#fffbeg] relative overflow-x-hidden" style={{ backgroundColor: '#fffbe6' }}>
@@ -15,7 +17,7 @@ export default function CoursesPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav className="flex justify-center text-sm font-black text-[#e4552c] mb-6 uppercase tracking-widest" aria-label="Breadcrumb" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>
             <ol className="flex items-center space-x-3">
-              <li><a href="/" className="hover:text-black transition-colors bg-white/50 px-4 py-2 rounded-full shadow-sm">Home</a></li>
+              <li><Link href="/" className="hover:text-black transition-colors bg-white/50 px-4 py-2 rounded-full shadow-sm">Home</Link></li>
               <li><span> - </span></li>
               <li className="text-white bg-[#e4552c] px-4 py-2 rounded-full shadow-sm" aria-current="page">Courses</li>
             </ol>

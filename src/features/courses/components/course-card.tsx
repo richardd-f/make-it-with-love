@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Image from "next/image";
 import { ICourse } from "../interfaces/course.types";
 
 const DECOR_IMAGES = [
@@ -11,14 +12,14 @@ const DECOR_IMAGES = [
 
 function mulberry32(a: number) {
   return function() {
-    var t = a += 0x6D2B79F5;
+    let t = a += 0x6D2B79F5;
     t = Math.imul(t ^ t >>> 15, t | 1);
     t ^= t + Math.imul(t ^ t >>> 7, t | 61);
     return ((t ^ t >>> 14) >>> 0) / 4294967296;
   }
 }
 
-export const CourseCard = ({ course, index }: { course: ICourse; index: number }) => {
+export const CourseCard = ({ course }: { course: ICourse }) => {
 
   const decors = useMemo(() => {
     // Generate deterministic random decorators based on ID
@@ -61,7 +62,13 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
 
         {/* Image Section */}
         <div className="relative w-full md:w-5/12 h-72 md:h-auto shrink-0 overflow-hidden bg-gradient-to-br from-[#f6e5c4]/30 to-[#f79d1c]/10 z-10 flex items-center justify-center p-8">
-          <img src={course.thumbnailUrl} alt={course.category} className="w-full h-full object-contain mix-blend-multiply opacity-80" />
+          <Image 
+            src={course.thumbnailUrl} 
+            alt={course.category} 
+            width={400} 
+            height={400} 
+            className="w-full h-full object-contain mix-blend-multiply opacity-80" 
+          />
           
           {course.tags && course.tags.length > 0 && (
             <div className="absolute top-6 left-6 flex gap-2 z-20">
@@ -83,13 +90,18 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
         
           {/* Absolute randomized decors floating STRICTLY in content area */}
           {decors.map((d, idx) => (
-            <img 
+            <div 
               key={idx} 
-              src={d.src} 
-              alt="decor" 
               className="absolute opacity-10 pointer-events-none z-0 mix-blend-multiply" 
-              style={{ top: `${d.top}%`, left: `${d.left}%`, width: `${d.size}px`, transform: `rotate(${d.rotation}deg)` }} 
-            />
+              style={{ top: `${d.top}%`, left: `${d.left}%`, transform: `rotate(${d.rotation}deg)` }}
+            >
+              <Image 
+                src={d.src} 
+                alt="decor" 
+                width={d.size} 
+                height={d.size} 
+              />
+            </div>
           ))}
 
           <div className="flex justify-between items-start mb-4 relative z-10">

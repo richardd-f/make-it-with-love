@@ -38,7 +38,7 @@ export const CourseFilters = ({ filters, onChange }: CourseFiltersProps) => {
           <h4 className="font-bold text-lg text-gray-800 mb-4" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>Activity Type</h4>
           <div className="flex flex-col gap-4">
             {CATEGORIES.map(cat => (
-              <label key={cat} className="flex items-center gap-4 cursor-pointer group">
+              <label key={cat} className="flex items-center gap-4 cursor-pointer group" onClick={() => handleCategoryToggle(cat)}>
                 <div className={`w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-colors shadow-sm ${filters.categories?.includes(cat)
                     ? 'bg-[#32a569] border-[#32a569]'
                     : 'border-gray-300 bg-gray-50 group-hover:border-[#32a569]'
@@ -56,7 +56,7 @@ export const CourseFilters = ({ filters, onChange }: CourseFiltersProps) => {
           <h4 className="font-bold text-lg text-gray-800 mb-4" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>Age Range</h4>
           <div className="flex flex-col gap-4">
             {AGE_RANGES.map(age => (
-              <label key={age} className="flex items-center gap-4 cursor-pointer group">
+              <label key={age} className="flex items-center gap-4 cursor-pointer group" onClick={() => handleAgeToggle(age)}>
                 <div className={`w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-colors shadow-sm ${filters.ageRanges?.includes(age)
                     ? 'bg-[#f79d1c] border-[#f79d1c]'
                     : 'border-gray-300 bg-gray-50 group-hover:border-[#f79d1c]'
