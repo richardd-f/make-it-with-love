@@ -1,0 +1,41 @@
+services:
+  migration:
+    image: ghcr.io/richardd-f/make-it-with-love:latest
+    container_name: make-it-with-love-migration
+    env_file:
+      - .env
+    command: prisma migrate deploy
+    networks:
+      - npm_default
+
+  seed:
+    image: ghcr.io/richardd-f/make-it-with-love:latest
+    container_name: make-it-with-love-seed
+    env_file:
+      - .env
+    command: prisma db seed
+    depends_on:
+      - migration
+    networks:
+      - npm_default
+
+  web:
+    image: ghcr.io/richardd-f/make-it-with-love:latest
+    container_name: make-it-with-love
+    expose:
+      - 3000
+    env_file:
+      - .env
+    restart: always
+    deploy:
+      resources:
+        limits:
+          cpus: '0.90'
+    depends_on:
+      - seed
+    networks:
+      - npm_default
+
+networks:
+  npm_default:
+    external: true
