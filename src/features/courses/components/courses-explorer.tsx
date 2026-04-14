@@ -124,7 +124,7 @@ export const CoursesExplorer = () => {
             className={`w-full pl-16 pr-6 py-4 sm:pl-20 sm:pr-8 sm:py-6 bg-white border border-gray-100 rounded-full focus:outline-none text-xl sm:text-2xl font-normal text-gray-800 transition-all ${isSearchFocused ? 'anim-shine' : 'shadow-xl'}`}
             style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}
           />
-          <button 
+          <button
             onClick={handleSearchClick}
             className={`absolute left-4 top-3.5 sm:left-6 sm:top-5 w-8 h-8 sm:w-10 sm:h-10 text-[#ea7c9d] ${isSearchJumping ? 'anim-jump-flip' : ''}`}
           >

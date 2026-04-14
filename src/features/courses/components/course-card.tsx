@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Link from "next/link";
 import { ICourse } from "../interfaces/course.types";
 
 const DECOR_IMAGES = [
@@ -10,7 +11,7 @@ const DECOR_IMAGES = [
 ];
 
 function mulberry32(a: number) {
-  return function() {
+  return function () {
     var t = a += 0x6D2B79F5;
     t = Math.imul(t ^ t >>> 15, t | 1);
     t ^= t + Math.imul(t ^ t >>> 7, t | 61);
@@ -25,7 +26,7 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
     const random = mulberry32(parseInt(course.id) + 12345);
     const count = 2 + Math.floor(random() * 2); // 2 or 3 decorators
     const arr = [];
-    for(let i=0; i<count; i++) {
+    for (let i = 0; i < count; i++) {
       const decorIndex = Math.floor(random() * DECOR_IMAGES.length);
       arr.push({
         src: `/images/assets/${DECOR_IMAGES[decorIndex]}`,
@@ -40,7 +41,8 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
 
   return (
     <>
-      <style dangerouslySetInnerHTML={{__html:`
+      <style dangerouslySetInnerHTML={{
+        __html: `
         .card-shine::before {
           content: '';
           position: absolute;
@@ -57,12 +59,12 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
         }
       `}} />
 
-      <div className="card-shine group flex flex-col md:flex-row bg-white rounded-[3rem] shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden cursor-pointer w-full relative z-10 border border-gray-100">
+      <Link href={`/courses/${course.id}`} className="card-shine group flex flex-col md:flex-row bg-white rounded-[3rem] shadow-xl hover:shadow-2xl transition-shadow duration-300 overflow-hidden cursor-pointer w-full relative z-10 border border-gray-100">
 
         {/* Image Section */}
         <div className="relative w-full md:w-5/12 h-72 md:h-auto shrink-0 overflow-hidden bg-gradient-to-br from-[#f6e5c4]/30 to-[#f79d1c]/10 z-10 flex items-center justify-center p-8">
           <img src={course.thumbnailUrl} alt={course.category} className="w-full h-full object-contain mix-blend-multiply opacity-80" />
-          
+
           {course.tags && course.tags.length > 0 && (
             <div className="absolute top-6 left-6 flex gap-2 z-20">
               {course.tags.map(tag => (
@@ -80,15 +82,15 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
 
         {/* Content Section */}
         <div className="flex flex-col flex-1 p-8 md:p-12 justify-center bg-transparent z-20 relative drop-shadow-sm overflow-hidden">
-        
+
           {/* Absolute randomized decors floating STRICTLY in content area */}
           {decors.map((d, idx) => (
-            <img 
-              key={idx} 
-              src={d.src} 
-              alt="decor" 
-              className="absolute opacity-10 pointer-events-none z-0 mix-blend-multiply" 
-              style={{ top: `${d.top}%`, left: `${d.left}%`, width: `${d.size}px`, transform: `rotate(${d.rotation}deg)` }} 
+            <img
+              key={idx}
+              src={d.src}
+              alt="decor"
+              className="absolute opacity-10 pointer-events-none z-0 mix-blend-multiply"
+              style={{ top: `${d.top}%`, left: `${d.left}%`, width: `${d.size}px`, transform: `rotate(${d.rotation}deg)` }}
             />
           ))}
 
@@ -97,16 +99,16 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
               {course.category} • {course.ageRange} yrs
             </span>
           </div>
-          
+
           <h3 className="text-3xl md:text-5xl text-gray-800 mb-6 leading-[1.2] group-hover:text-[#ea7c9d] transition-colors font-normal" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>
             {course.title}
           </h3>
-          
+
           <p className="text-xl text-gray-500 uppercase tracking-widest font-normal" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>
             {course.author}
           </p>
         </div>
-      </div>
+      </Link>
     </>
   );
 };
