@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useMemo } from "react";
+import Image from "next/image";
 import Link from "next/link";
 import { ICourse } from "../interfaces/course.types";
 
@@ -19,7 +20,7 @@ function mulberry32(a: number) {
   }
 }
 
-export const CourseCard = ({ course, index }: { course: ICourse; index: number }) => {
+export const CourseCard = ({ course }: { course: ICourse }) => {
 
   const decors = useMemo(() => {
     // Generate deterministic random decorators based on ID
@@ -63,8 +64,14 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
 
         {/* Image Section */}
         <div className="relative w-full md:w-5/12 h-72 md:h-auto shrink-0 overflow-hidden bg-gradient-to-br from-[#f6e5c4]/30 to-[#f79d1c]/10 z-10 flex items-center justify-center p-8">
-          <img src={course.thumbnailUrl} alt={course.category} className="w-full h-full object-contain mix-blend-multiply opacity-80" />
-
+          <Image 
+            src={course.thumbnailUrl} 
+            alt={course.category} 
+            width={400} 
+            height={400} 
+            className="w-full h-full object-contain mix-blend-multiply opacity-80" 
+          />
+          
           {course.tags && course.tags.length > 0 && (
             <div className="absolute top-6 left-6 flex gap-2 z-20">
               {course.tags.map(tag => (
@@ -85,13 +92,18 @@ export const CourseCard = ({ course, index }: { course: ICourse; index: number }
 
           {/* Absolute randomized decors floating STRICTLY in content area */}
           {decors.map((d, idx) => (
-            <img
-              key={idx}
-              src={d.src}
-              alt="decor"
-              className="absolute opacity-10 pointer-events-none z-0 mix-blend-multiply"
-              style={{ top: `${d.top}%`, left: `${d.left}%`, width: `${d.size}px`, transform: `rotate(${d.rotation}deg)` }}
-            />
+            <div 
+              key={idx} 
+              className="absolute opacity-10 pointer-events-none z-0 mix-blend-multiply" 
+              style={{ top: `${d.top}%`, left: `${d.left}%`, transform: `rotate(${d.rotation}deg)` }}
+            >
+              <Image 
+                src={d.src} 
+                alt="decor" 
+                width={d.size} 
+                height={d.size} 
+              />
+            </div>
           ))}
 
           <div className="flex justify-between items-start mb-4 relative z-10">

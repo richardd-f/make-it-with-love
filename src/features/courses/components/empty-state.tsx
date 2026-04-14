@@ -13,7 +13,7 @@ export const EmptyState = ({ onClearFilters }: EmptyStateProps) => {
       </div>
       <h3 className="text-3xl font-bold font-family-papernotes text-[#e4552c] mb-3">No Courses Found</h3>
       <p className="text-gray-500 mb-8 max-w-md" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>
-        Oops, we couldn't find any courses matching your filters. Try tweaking your search or filtering options.
+        Oops, we couldn&apos;t find any courses matching your filters. Try tweaking your search or filtering options.
       </p>
       <button 
         onClick={onClearFilters}

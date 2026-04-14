@@ -6,6 +6,8 @@ export const metadata = {
 import { CoursesExplorer } from "../../features/courses/components/courses-explorer";
 import { BreadcrumbList } from "@/src/components/ui/breadcrumbs";
 
+import Link from "next/link";
+
 export default function CoursesPage() {
   return (
     <div className="min-h-screen bg-[#fffbeg] relative overflow-x-hidden">
@@ -15,11 +17,11 @@ export default function CoursesPage() {
       <div className="pt-20 pb-16 relative z-10 w-full text-center">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-6">
-            <BreadcrumbList 
+            <BreadcrumbList
               items={[
                 { label: "Home", href: "/" },
                 { label: "Courses", active: true }
-              ]} 
+              ]}
             />
           </div>
           <h1 className="text-6xl md:text-7xl font-extrabold text-[#32a569] font-family-papernotes drop-shadow-md">
