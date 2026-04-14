@@ -9,7 +9,7 @@ import Link from "next/link";
 
 export default function CoursesPage() {
   return (
-    <div className="min-h-screen bg-[#fffbeg] relative overflow-x-hidden" style={{ backgroundColor: '#fffbe6' }}>
+    <div className="min-h-screen bg-[#fffbeg] relative overflow-x-hidden">
 
       {/* Scattered Decorations */}
       {/* Header Section */}

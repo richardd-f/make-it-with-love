@@ -30,7 +30,7 @@ export const CourseFilters = ({ filters, onChange }: CourseFiltersProps) => {
 
   return (
     <div className="w-full bg-white rounded-[2rem] p-8 shadow-xl border-4 border-[#f6e5c4] mb-8 animate-in slide-in-from-top-4 fade-in duration-300">
-      <h3 className="text-3xl font-bold mb-8 font-family-papernotes text-[#e4552c] text-center sm:text-left">Fun Filters 🎨</h3>
+      <h3 className="text-3xl font-bold mb-8 text-[#e4552c] text-center sm:text-left">Filters</h3>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8">
         {/* Category */}
@@ -38,10 +38,16 @@ export const CourseFilters = ({ filters, onChange }: CourseFiltersProps) => {
           <h4 className="font-bold text-lg text-gray-800 mb-4" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>Activity Type</h4>
           <div className="flex flex-col gap-4">
             {CATEGORIES.map(cat => (
-              <label key={cat} className="flex items-center gap-4 cursor-pointer group" onClick={() => handleCategoryToggle(cat)}>
+              <label key={cat} className="flex items-center gap-4 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  className="hidden"
+                  checked={filters.categories?.includes(cat) || false}
+                  onChange={() => handleCategoryToggle(cat)}
+                />
                 <div className={`w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-colors shadow-sm ${filters.categories?.includes(cat)
-                    ? 'bg-[#32a569] border-[#32a569]'
-                    : 'border-gray-300 bg-gray-50 group-hover:border-[#32a569]'
+                  ? 'bg-[#32a569] border-[#32a569]'
+                  : 'border-gray-300 bg-gray-50 group-hover:border-[#32a569]'
                   }`}>
                   {filters.categories?.includes(cat) && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" /></svg>}
                 </div>
@@ -56,10 +62,16 @@ export const CourseFilters = ({ filters, onChange }: CourseFiltersProps) => {
           <h4 className="font-bold text-lg text-gray-800 mb-4" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>Age Range</h4>
           <div className="flex flex-col gap-4">
             {AGE_RANGES.map(age => (
-              <label key={age} className="flex items-center gap-4 cursor-pointer group" onClick={() => handleAgeToggle(age)}>
+              <label key={age} className="flex items-center gap-4 cursor-pointer group">
+                <input
+                  type="checkbox"
+                  className="hidden"
+                  checked={filters.ageRanges?.includes(age) || false}
+                  onChange={() => handleAgeToggle(age)}
+                />
                 <div className={`w-7 h-7 rounded-xl border-2 flex items-center justify-center transition-colors shadow-sm ${filters.ageRanges?.includes(age)
-                    ? 'bg-[#f79d1c] border-[#f79d1c]'
-                    : 'border-gray-300 bg-gray-50 group-hover:border-[#f79d1c]'
+                  ? 'bg-[#f79d1c] border-[#f79d1c]'
+                  : 'border-gray-300 bg-gray-50 group-hover:border-[#f79d1c]'
                   }`}>
                   {filters.ageRanges?.includes(age) && <svg className="w-4 h-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={4} d="M5 13l4 4L19 7" /></svg>}
                 </div>
