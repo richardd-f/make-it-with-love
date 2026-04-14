@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { Carousel } from "@/src/features/home/components/Carousel";
-import Link from "next/link";
 
 export default function Home() {
   const carouselImages = [
@@ -33,15 +32,10 @@ export default function Home() {
           <p className="text-lg sm:text-xl text-foreground/80 max-w-xl font-sans">
             The ultimate creative playground for young artists! We believe that the best things in life are handmade. Our platform provides a curated library of high-quality, kid-friendly video tutorials that turn screen time into &quot;hands-on&quot; time.
           </p>
-<<<<<<< HEAD
           <Link href="/courses">
             <button className="mt-4 px-10 py-4 bg-[var(--color-pink)] hover:bg-[var(--color-red)] text-white font-bold text-3xl rounded-full hover:scale-105 transition-all shadow-xl font-family-papernotes tracking-widest leading-none flex items-center justify-center">
               lets learn!!
             </button>
-=======
-          <Link href="/courses" className="mt-4 px-10 py-4 bg-[var(--color-pink)] hover:bg-[var(--color-red)] text-white font-bold text-3xl rounded-full hover:scale-105 transition-all shadow-xl font-family-papernotes tracking-widest leading-none flex items-center justify-center">
-            lets learn!!
->>>>>>> 7b8c3d9526df38cda9e582521e7d755f8933f2ba
           </Link>
         </section>
       </div>
