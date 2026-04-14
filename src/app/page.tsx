@@ -13,35 +13,9 @@ export default function Home() {
 
   return (
     <main className="flex-1 flex flex-col items-center justify-center p-8 sm:p-12 md:p-24 w-full">
-      {/* Decorative Assets */}
-      <div className="absolute top-0 right-0 -z-10 opacity-30 select-none pointer-events-none">
-        <Image 
-          src="/images/assets/circle_orange.webp" 
-          alt="Decoration" 
-          width={300} 
-          height={300} 
-        />
-      </div>
-      <div className="absolute bottom-0 left-0 -z-10 opacity-30 select-none pointer-events-none">
-        <Image 
-          src="/images/assets/circle_pink.webp" 
-          alt="Decoration" 
-          width={250} 
-          height={250} 
-        />
-      </div>
-
       <div className="max-w-6xl w-full flex flex-col gap-12 items-center text-center">
         {/* Title */}
         <section className="flex flex-col gap-4 max-w-3xl items-center animate-fade-in">
-          <Image 
-            src="/images/logo/logo_main.webp" 
-            alt="Make It With Love" 
-            width={120} 
-            height={120} 
-            className="mb-4"
-            priority
-          />
           <h1 className="text-6xl sm:text-7xl md:text-8xl font-family-papernotes text-foreground drop-shadow-sm">
             Make It With Love
           </h1>
