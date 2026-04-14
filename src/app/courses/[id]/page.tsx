@@ -6,6 +6,7 @@ import { StarterKitCard } from "@/src/features/courses/components/starter-kit-ca
 import { CourseCurriculum } from "@/src/features/courses/components/course-curriculum";
 import { CourseReviews } from "@/src/features/courses/components/course-reviews";
 import { CourseCtaBox } from "@/src/features/courses/components/course-cta-box";
+import { BreadcrumbList } from "@/src/components/ui/breadcrumbs";
 import { notFound } from "next/navigation";
 
 export default async function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
@@ -20,13 +21,15 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
     <main className="min-h-screen relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-12">
       
       {/* Breadcrumbs */}
-      <nav className="mb-8 font-sans font-medium text-gray-500 uppercase tracking-widest text-sm flex gap-2">
-        <Link href="/" className="hover:text-[#ea7c9d] transition-colors">Home</Link>
-        <span>&gt;</span>
-        <Link href="/courses" className="hover:text-[#ea7c9d] transition-colors">Courses</Link>
-        <span>&gt;</span>
-        <span className="text-gray-800 font-bold truncate max-w-xs">{course.title}</span>
-      </nav>
+      <div className="mb-8">
+        <BreadcrumbList 
+          items={[
+            { label: "Home", href: "/" },
+            { label: "Courses", href: "/courses" },
+            { label: course.title, active: true }
+          ]} 
+        />
+      </div>
 
       {/* Hero Unit spanning full width on top */}
       <CourseHero course={course} />

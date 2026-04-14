@@ -14,20 +14,12 @@ export const CourseHero = ({ course }: { course: ICourseDetail }) => {
   };
 
   return (
-    <div className="w-full bg-white rounded-[3rem] p-6 sm:p-10 shadow-2xl relative z-10 border-[6px] border-[#f6e5c4] mb-12">
+    <div className="w-full bg-white rounded-[3rem] p-6 sm:p-10 shadow-2xl relative z-10 border-[6px] border-[#f6e5c4] mb-12 active:animate-twitch">
       <div className="flex flex-col xl:flex-row gap-8 xl:gap-12 items-center xl:items-stretch">
         
         {/* Left Side: Video/Thumbnail */}
-        <div className="w-full xl:w-1/2 flex-shrink-0 relative rounded-[2rem] overflow-hidden shadow-inner bg-[#fffbe6]">
-          {course.videoPreviewUrl ? (
-            <video 
-              autoPlay loop muted playsInline controls
-              className="w-full h-full object-cover min-h-[300px]"
-              src={course.videoPreviewUrl}
-            />
-          ) : (
-             <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-contain mix-blend-multiply opacity-80 min-h-[300px]" />
-          )}
+        <div className="w-full xl:w-1/2 flex-shrink-0 relative rounded-[2rem] overflow-hidden shadow-inner bg-[#fffbe6] cursor-pointer">
+          <img src={course.thumbnailUrl} alt={course.title} className="w-full h-full object-contain mix-blend-multiply opacity-80 min-h-[300px]" />
           {/* Fun Decors */}
           <div className="absolute top-4 left-4 z-20 flex gap-2">
             {course.tags?.map(tag => (
