@@ -9,6 +9,11 @@ UI Rules
 2. when using popup modal, the background is blured
 3. use flex over grid
 4. use same UI style with previous/other pages UI style
+5. you can use image asset for web decoration from public/images/assets/
+6. you can use image for logo from public/images/logo/
+7. use light theme
+8. use "font-family-papernotes" class for font Papernotes, this font is for headings and titles
+9. use montserrat for body text
 
 Logic Rules
 1. remove unused import
