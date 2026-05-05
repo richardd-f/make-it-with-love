@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client"
   output   = "../src/generated/prisma"
@@ -11,4 +5,282 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+}
+
+// -----------------------------------------------------------------------------
+// USER & SUBSCRIPTION DOMAIN
+// -----------------------------------------------------------------------------
+
+model User {
+  userId    String   @id @default(uuid()) @map("user_id")
+  name      String   @db.VarChar(255)
+  address   String?
+  email     String   @unique
+  password  String
+  createdAt DateTime @default(now()) @map("created_at")
+
+  // Relations
+  subscriptions UserSubscription[]
+  transactions  Transaction[]
+  userVideos    UserVideo[]
+  carts         Cart[]
+  wishlists     Wishlist[]
+  enrollments   Enrollment[]
+
+  @@map("users")
+}
+
+model Subscription {
+  subscriptionId   String  @id @default(uuid()) @map("subscription_id")
+  planName         String  @map("plan_name")
+  description      String?
+  price            Float
+  duration         Int
+  meetingAdditions Int     @map("meeting_additions")
+
+  userSubscriptions UserSubscription[]
+
+  @@map("subscriptions")
+}
+
+model UserSubscription {
+  id                   String   @id @default(uuid()) @map("users_subscriptions")
+  userId               String   @map("user_id")
+  subscriptionId       String   @map("subscription_id")
+  startDate            DateTime @map("start_date")
+  status               String
+  meetingAdditionsLeft Int      @map("meeting_additions_left")
+
+  user         User         @relation(fields: [userId], references: [userId])
+  subscription Subscription @relation(fields: [subscriptionId], references: [subscriptionId])
+
+  @@map("users_subscriptions")
+}
+
+// -----------------------------------------------------------------------------
+// TRANSACTION DOMAIN
+// -----------------------------------------------------------------------------
+
+model Transaction {
+  transactionId   String   @id @default(uuid()) @map("transaction_id")
+  userId          String   @map("user_id")
+  paymentStatus   String   @map("payment_status")
+  transactionDate DateTime @map("transaction_date")
+
+  user               User                @relation(fields: [userId], references: [userId])
+  transactionDetails TransactionDetail[]
+
+  @@map("transactions")
+}
+
+model TransactionDetail {
+  transactionDetailsId String @id @default(uuid()) @map("transaction_details_id")
+  transactionId        String @map("transaction_id")
+  item                 String
+  quantity             Int
+  totalPrice           Float  @map("total_price")
+
+  transaction Transaction @relation(fields: [transactionId], references: [transactionId])
+
+  @@map("transaction_details")
+}
+
+// -----------------------------------------------------------------------------
+// COURSE & VIDEO DOMAIN
+// -----------------------------------------------------------------------------
+
+model Video {
+  id          String  @id @default(uuid())
+  title       String
+  description String?
+  url         String
+
+  userVideos UserVideo[]
+
+  @@map("videos")
+}
+
+model UserVideo {
+  userVideoId String  @id @default(uuid()) @map("user_video_id")
+  userId      String  @map("user_id")
+  videoId     String  @map("video_id")
+  isDone      Boolean @default(false)
+
+  user  User  @relation(fields: [userId], references: [userId])
+  video Video @relation(fields: [videoId], references: [id])
+
+  @@map("user_video")
+}
+
+model Course {
+  id              String   @id @default(uuid())
+  name            String
+  description     String?
+  minAge          Int      @map("min_age")
+  price           Float
+  amountOfMeeting Int      @map("amount_of_meeting")
+  createdAt       DateTime @default(now()) @map("created_at")
+
+  courseCategories CourseCategory[]
+  courseKits       CourseKit[]
+  carts            Cart[]
+  wishlists        Wishlist[]
+  enrollments      Enrollment[]
+
+  @@map("courses")
+}
+
+model Category {
+  id       String @id @default(uuid())
+  category String
+
+  courseCategories CourseCategory[]
+
+  @@map("categories")
+}
+
+model CourseCategory {
+  id         String @id @default(uuid())
+  courseId   String @map("course_id")
+  categoryId String @map("category_id")
+
+  course   Course   @relation(fields: [courseId], references: [id])
+  category Category @relation(fields: [categoryId], references: [id])
+
+  @@map("course_category")
+}
+
+// -----------------------------------------------------------------------------
+// SHOPPING & KITS DOMAIN
+// -----------------------------------------------------------------------------
+
+model DiyKit {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  price       Float
+  stock       Int
+
+  courseKits CourseKit[]
+
+  @@map("diy_kits")
+}
+
+model CourseKit {
+  id        String  @id @default(uuid())
+  diyKitsId String  @map("diy_kits_id")
+  courseId  String  @map("course_id")
+  url       String?
+
+  diyKit DiyKit @relation(fields: [diyKitsId], references: [id])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@map("course_kits")
+}
+
+model Cart {
+  cartId    String   @id @default(uuid()) @map("cart_id")
+  userId    String   @map("user_id")
+  courseId  String   @map("course_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [userId])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@map("carts")
+}
+
+model Wishlist {
+  wishlistId String   @id @default(uuid()) @map("wishlist_id")
+  userId     String   @map("user_id")
+  courseId   String   @map("course_id")
+  createdAt  DateTime @default(now()) @map("created_at")
+
+  user   User   @relation(fields: [userId], references: [userId])
+  course Course @relation(fields: [courseId], references: [id])
+
+  @@map("wishlists")
+}
+
+// -----------------------------------------------------------------------------
+// ENROLLMENT & MENTORING DOMAIN
+// -----------------------------------------------------------------------------
+
+model Enrollment {
+  id                 String @id @default(uuid())
+  userId             String @map("user_id")
+  courseId           String @map("course_id")
+  meetingsAmountLeft Int    @map("meetings_amount_left")
+
+  user           User           @relation(fields: [userId], references: [userId])
+  course         Course         @relation(fields: [courseId], references: [id])
+  imageGalleries ImageGallery[]
+  meetings       Meeting[]
+
+  @@map("enrollment")
+}
+
+model ImageGallery {
+  id           String  @id @default(uuid())
+  title        String?
+  caption      String?
+  url          String
+  enrollmentId String  @map("enrollment_id")
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
+
+  @@map("image_gallery")
+}
+
+model Meeting {
+  id                   String  @id @default(uuid())
+  enrollmentId         String  @map("enrollment_id")
+  mentorAvailabilityId String? @map("mentor_availability_id")
+
+  enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
+
+  // Circular relationship handled gracefully: 
+  // 1. Where meeting holds the FK to availability
+  mentorAvailability MentorAvailability? @relation("AvailabilityToMeeting", fields: [mentorAvailabilityId], references: [id])
+
+  // 2. Where availability holds the FK to meeting
+  availabilities MentorAvailability[] @relation("MeetingToAvailability")
+
+  @@map("meeting")
+}
+
+model Mentor {
+  id          String  @id @default(uuid())
+  name        String
+  description String?
+  photo       String?
+
+  availabilities MentorAvailability[]
+
+  @@map("mentor")
+}
+
+model MentorAvailability {
+  id        String                   @id @default(uuid())
+  mentorId  String                   @map("mentor_id")
+  meetingId String?                  @map("meeting_id")
+  startTime DateTime                 @map("start_time")
+  endTime   DateTime                 @map("end_time")
+  status    MentorAvailabilityStatus
+
+  mentor Mentor @relation(fields: [mentorId], references: [id])
+
+  // Circular relationship handled gracefully:
+  // 1. Where availability holds the FK to meeting
+  meeting Meeting? @relation("MeetingToAvailability", fields: [meetingId], references: [id])
+
+  // 2. Where meeting holds the FK to availability
+  meetings Meeting[] @relation("AvailabilityToMeeting")
+
+  @@map("mentor_availability")
+}
+
+enum MentorAvailabilityStatus {
+  AVAILABLE
+  BOOKED
 }
