@@ -4,7 +4,8 @@ import { getCourseDetail } from "@/src/features/courses/actions/get-course-detai
 import { CourseHero } from "@/src/features/courses/components/course-hero";
 import { StarterKitCard } from "@/src/features/courses/components/starter-kit-card";
 import { CourseCurriculum } from "@/src/features/courses/components/course-curriculum";
-import { CourseReviews } from "@/src/features/courses/components/course-reviews";
+import { CourseGalleryPreview } from "@/src/features/gallery/components/course-gallery-preview";
+import { getGalleryPosts } from "@/src/features/gallery/actions/get-gallery.action";
 import { CourseCtaBox } from "@/src/features/courses/components/course-cta-box";
 import { BreadcrumbList } from "@/src/components/ui/breadcrumbs";
 import { notFound } from "next/navigation";
@@ -12,10 +13,12 @@ import { notFound } from "next/navigation";
 export default async function CourseDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
   const course = await getCourseDetail(resolvedParams.id);
-
+  
   if (!course) {
     return notFound();
   }
+
+  const galleryPosts = await getGalleryPosts(course.id);
 
   if (course.isOwned) {
     const { redirect } = await import("next/navigation");
@@ -43,15 +46,15 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative items-start">
         
         {/* Main Content Column */}
-        <div className="flex-1 w-full flex flex-col gap-12">
+        <div className="flex-1 w-full min-w-0 flex flex-col gap-12">
           {/* Starter Kit Section */}
           <StarterKitCard starterKit={course.starterKit} />
           
           {/* Curriculum Section */}
           <CourseCurriculum contents={course.contents} />
 
-          {/* Reviews Section */}
-          <CourseReviews reviews={course.reviews} isOwned={course.isOwned || false} />
+          {/* Student's Gallery Preview Section (Replaces Reviews) */}
+          <CourseGalleryPreview posts={galleryPosts} courseId={course.id} />
         </div>
 
         {/* Sidebar Sticky Column */}

@@ -61,6 +61,8 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
         </div>
       )}
 
+
+
       <div className="text-center mt-2 opacity-80 text-sm flex items-center justify-center gap-2">
         <span>30-Day Happiness Guarantee</span>
       </div>
