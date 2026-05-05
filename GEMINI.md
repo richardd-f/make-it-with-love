@@ -26,4 +26,3 @@ Logic Rules
 8. if there are many component file, create a folder for groups of components
 10. do not put server action or logic function in UI code, put it in server actions file/folder
 11. Use PNPM over NPM for package manager
-
