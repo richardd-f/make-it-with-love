@@ -1,0 +1,93 @@
+'use server';
+
+import { prisma } from '@/src/lib/prisma';
+import { revalidatePath } from 'next/cache';
+import { redirect } from 'next/navigation';
+
+export async function createCourse(prevState: any, formData: FormData) {
+  const name = formData.get('name') as string;
+  const description = formData.get('description') as string;
+  const minAge = parseInt(formData.get('minAge') as string, 10);
+  const price = parseFloat(formData.get('price') as string);
+  const amountOfMeeting = parseInt(formData.get('amountOfMeeting') as string, 10);
+
+  if (!name || isNaN(minAge) || isNaN(price) || isNaN(amountOfMeeting)) {
+    return { error: 'Missing required fields or invalid numbers' };
+  }
+
+  let course;
+  try {
+    course = await prisma.course.create({
+      data: {
+        name,
+        description,
+        minAge,
+        price,
+        amountOfMeeting,
+      },
+    });
+  } catch (error) {
+    console.error('Error creating course', error);
+    return { error: 'Failed to create course' };
+  }
+
+  revalidatePath('/admin/courses');
+  redirect(`/admin/courses/${course.id}`);
+}
+
+export async function updateCourse(courseId: string, prevState: any, formData: FormData) {
+  const name = formData.get('name') as string;
+  const description = formData.get('description') as string;
+  const minAge = parseInt(formData.get('minAge') as string, 10);
+  const price = parseFloat(formData.get('price') as string);
+  const amountOfMeeting = parseInt(formData.get('amountOfMeeting') as string, 10);
+
+  if (!name || isNaN(minAge) || isNaN(price) || isNaN(amountOfMeeting)) {
+    return { error: 'Missing required fields or invalid numbers' };
+  }
+
+  try {
+    await prisma.course.update({
+      where: { id: courseId },
+      data: {
+        name,
+        description,
+        minAge,
+        price,
+        amountOfMeeting,
+      },
+    });
+  } catch (error) {
+    console.error('Error updating course', error);
+    return { error: 'Failed to update course' };
+  }
+
+  revalidatePath(`/admin/courses/${courseId}`);
+  revalidatePath('/admin/courses');
+  return { success: 'Course updated successfully' };
+}
+
+export async function toggleCourseCategory(courseId: string, categoryId: string, isAssigned: boolean) {
+  try {
+    if (isAssigned) {
+      await prisma.courseCategory.deleteMany({
+        where: {
+          courseId,
+          categoryId,
+        },
+      });
+    } else {
+      await prisma.courseCategory.create({
+        data: {
+          courseId,
+          categoryId,
+        },
+      });
+    }
+    revalidatePath(`/admin/courses/${courseId}`);
+    return { success: true };
+  } catch (error) {
+    console.error('Error toggling course category', error);
+    return { error: 'Failed to update categories' };
+  }
+}

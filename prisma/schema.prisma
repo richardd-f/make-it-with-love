@@ -102,7 +102,9 @@ model Video {
   title       String
   description String?
   url         String
+  courseId    String  @map("course_id")
 
+  course     Course      @relation(fields: [courseId], references: [id])
   userVideos UserVideo[]
 
   @@map("videos")
@@ -114,7 +116,7 @@ model UserVideo {
   videoId     String  @map("video_id")
   isDone      Boolean @default(false)
 
-  user  User  @relation(fields: [userId], references: [userId])
+  user  User  @relation(fields: [userId], references: [userId]) // Assuming your User model has userId as @id
   video Video @relation(fields: [videoId], references: [id])
 
   @@map("user_video")
@@ -129,6 +131,7 @@ model Course {
   amountOfMeeting Int      @map("amount_of_meeting")
   createdAt       DateTime @default(now()) @map("created_at")
 
+  videos           Video[]
   courseCategories CourseCategory[]
   courseKits       CourseKit[]
   carts            Cart[]
@@ -175,10 +178,9 @@ model DiyKit {
 }
 
 model CourseKit {
-  id        String  @id @default(uuid())
-  diyKitsId String  @map("diy_kits_id")
-  courseId  String  @map("course_id")
-  url       String?
+  id        String @id @default(uuid())
+  diyKitsId String @map("diy_kits_id")
+  courseId  String @map("course_id")
 
   diyKit DiyKit @relation(fields: [diyKitsId], references: [id])
   course Course @relation(fields: [courseId], references: [id])
