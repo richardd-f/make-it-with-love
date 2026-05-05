@@ -59,3 +59,9 @@ export interface ICourseDetail extends ICourse {
   reviews: IReview[];
   isOwned?: boolean;
 }
+
+export interface IEnrolledCourse extends ICourse {
+  description: string;
+  totalVideos: number;
+  watchedVideos: number;
+}
