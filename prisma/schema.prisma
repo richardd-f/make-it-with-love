@@ -11,12 +11,18 @@ datasource db {
 // USER & SUBSCRIPTION DOMAIN
 // -----------------------------------------------------------------------------
 
+enum Role {
+  USER
+  ADMIN
+}
+
 model User {
   userId    String   @id @default(uuid()) @map("user_id")
   name      String   @db.VarChar(255)
   address   String?
   email     String   @unique
   password  String
+  role      Role     @default(USER)
   createdAt DateTime @default(now()) @map("created_at")
 
   // Relations
