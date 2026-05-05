@@ -15,9 +15,32 @@ export function NavBar() {
         />
       </Link>
 
-      {/* Add more nav links here in the future if needed */}
+      {/* Navigation Links */}
       <div className="flex items-center gap-6">
-        {/* Placeholder for future links */}
+        <Link 
+          href="/myCourse" 
+          className="text-gray-700 font-bold hover:text-[#32a569] transition-colors"
+          style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}
+        >
+          My Courses
+        </Link>
+        <Link 
+          href="/courses" 
+          className="text-gray-700 font-bold hover:text-[#32a569] transition-colors"
+          style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}
+        >
+          Look for courses
+        </Link>
+        <Link 
+          href="/account" 
+          className="flex items-center justify-center w-10 h-10 rounded-full bg-[#f6e5c4] text-[#e4552c] hover:bg-[#f79d1c] hover:text-white transition-colors shadow-sm"
+          title="Account"
+        >
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </Link>
       </div>
     </nav>
   );
