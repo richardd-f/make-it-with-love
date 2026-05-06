@@ -2,10 +2,14 @@
 
 import React from "react";
 import { IStarterKit } from "../interfaces/course.types";
+import { trackEvent } from "@/src/actions/track-event.action";
 
 export const StarterKitCard = ({ starterKit }: { starterKit: IStarterKit }) => {
   return (
-    <div className="w-full bg-[#f6e5c4] rounded-[2rem] p-8 sm:p-10 shadow-lg relative border-4 border-[#f79d1c]/40 rotate-1 transition-transform hover:rotate-0 mb-12 cursor-pointer active:animate-twitch">
+    <div 
+      onClick={() => trackEvent("BUY_DIY_KIT_CLICK")}
+      className="w-full bg-[#f6e5c4] rounded-[2rem] p-8 sm:p-10 shadow-lg relative border-4 border-[#f79d1c]/40 rotate-1 transition-transform hover:rotate-0 mb-12 cursor-pointer active:animate-twitch"
+    >
       {/* Decorative pin icon (mocking a pinned paper) */}
       <div className="absolute -top-4 -left-4 w-12 h-12 bg-[#ea7c9d] rounded-full flex items-center justify-center shadow-md rotate-[-10deg]">
          <div className="w-4 h-4 bg-white rounded-full opacity-80" />

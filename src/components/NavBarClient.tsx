@@ -22,6 +22,7 @@ const NAV_ITEMS: NavItem[] = [
     children: [
       { label: 'Courses', href: '/admin/courses' },
       { label: 'DIY Kits', href: '/admin/diyKits' },
+      { label: 'Analytics', href: '/admin/analytics' },
     ],
   },
 ];

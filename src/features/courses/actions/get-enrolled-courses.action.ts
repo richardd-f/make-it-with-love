@@ -1,86 +1,76 @@
 "use server";
 
+import prisma from "@/src/lib/prisma";
+import { auth } from "@/src/auth";
 import { IEnrolledCourse } from "../interfaces/course.types";
 
-const MOCK_ENROLLED_COURSES: IEnrolledCourse[] = [
-  {
-    id: "3",
-    title: "Clay Sculpting — Masterclass",
-    author: "Jane Doe",
-    rating: 4.9,
-    totalReviews: 124,
-    price: 150000,
-    category: "Clay",
-    ageRange: "6-8",
-    thumbnailUrl: "/images/assets/coral1_pink.webp",
-    tags: ["Bestseller"],
-    description: "Learn to sculpt adorable characters from colorful clay. Shape, paint, and glaze your very own masterpiece from scratch!",
-    totalVideos: 5,
-    watchedVideos: 5,
-  },
-  {
-    id: "6",
-    title: "Origami Wonders — Paper Magic",
-    author: "John Smith",
-    rating: 4.7,
-    totalReviews: 88,
-    price: 100000,
-    category: "Origami",
-    ageRange: "9-12",
-    thumbnailUrl: "/images/assets/coral2_green.webp",
-    tags: ["New"],
-    description: "Fold your way into a world of imagination. From cranes to dragons, create stunning paper art step by step.",
-    totalVideos: 7,
-    watchedVideos: 3,
-  },
-  {
-    id: "9",
-    title: "Painting Adventures — Bright Colors",
-    author: "Jane Doe",
-    rating: 4.6,
-    totalReviews: 201,
-    price: 200000,
-    category: "Painting",
-    ageRange: "6-8",
-    thumbnailUrl: "/images/assets/coral1_orange.webp",
-    tags: [],
-    description: "Splash, blend, and paint your imagination onto canvas. Learn color theory and brush techniques through fun guided projects.",
-    totalVideos: 6,
-    watchedVideos: 1,
-  },
-  {
-    id: "12",
-    title: "DIY Toy Workshop — Build & Play",
-    author: "John Smith",
-    rating: 4.8,
-    totalReviews: 156,
-    price: 120000,
-    category: "DIY Toys",
-    ageRange: "9-12",
-    thumbnailUrl: "/images/assets/coral2_pink.webp",
-    tags: ["Bestseller"],
-    description: "Design and build your own toys using everyday craft supplies. Bring your inventions to life and show them off!",
-    totalVideos: 8,
-    watchedVideos: 4,
-  },
-  {
-    id: "15",
-    title: "Clay Critters — Tiny Animals",
-    author: "Jane Doe",
-    rating: 4.5,
-    totalReviews: 73,
-    price: 80000,
-    category: "Clay",
-    ageRange: "6-8",
-    thumbnailUrl: "/images/assets/coral1_green.webp",
-    tags: ["New"],
-    description: "Create a whole zoo of mini clay animals! Learn basic sculpting techniques while making your favorite creatures.",
-    totalVideos: 4,
-    watchedVideos: 2,
-  },
+const THUMBNAIL_IMAGES = [
+  "circle_green.webp", "circle_orange.webp", "circle_pink.webp", "circle_red.webp", "circle_yellow.webp",
+  "coral1_green.webp", "coral1_orange.webp", "coral1_pink.webp", "coral1_red.webp",
+  "coral2_green.webp", "coral2_orange.webp", "coral2_pink.webp", "coral2_red.webp"
 ];
 
+function getThumbnail(id: string): string {
+  let hash = 0;
+  for (let i = 0; i < id.length; i++) {
+    hash = id.charCodeAt(i) + ((hash << 5) - hash);
+  }
+  return `/images/assets/${THUMBNAIL_IMAGES[Math.abs(hash) % THUMBNAIL_IMAGES.length]}`;
+}
+
 export async function getEnrolledCourses(): Promise<IEnrolledCourse[]> {
-  await new Promise((resolve) => setTimeout(resolve, 400));
-  return MOCK_ENROLLED_COURSES;
+  const session = await auth();
+
+  if (!session?.user?.id) {
+    return [];
+  }
+
+  const userId = session.user.id;
+
+  const enrollments = await prisma.enrollment.findMany({
+    where: { userId },
+    include: {
+      course: {
+        include: {
+          courseCategories: {
+            include: { category: true },
+          },
+          videos: {
+            select: { id: true },
+          },
+        },
+      },
+    },
+  });
+
+  // Get all watched video IDs for this user in a single query
+  const watchedUserVideos = await prisma.userVideo.findMany({
+    where: { userId, isDone: true },
+    select: { videoId: true },
+  });
+  const watchedVideoIds = new Set(watchedUserVideos.map((uv) => uv.videoId));
+
+  return enrollments.map((enrollment) => {
+    const course = enrollment.course;
+    const category =
+      course.courseCategories[0]?.category.category || "General";
+    const videoIds = course.videos.map((v) => v.id);
+    const watchedCount = videoIds.filter((id) => watchedVideoIds.has(id)).length;
+
+    return {
+      id: course.id,
+      title: course.name,
+      author: "MakeitWithLove",
+      rating: 0,
+      totalReviews: 0,
+      price: course.price,
+      category,
+      ageRange: `${course.minAge}+`,
+      thumbnailUrl: getThumbnail(course.id),
+      tags: [],
+      description: course.description || "",
+      totalVideos: videoIds.length,
+      watchedVideos: watchedCount,
+    };
+  });
 }

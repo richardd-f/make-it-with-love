@@ -34,6 +34,7 @@ model User {
   enrollments   Enrollment[]
   accounts      Account[]
   sessions      Session[]
+  userActions   UserAction[]
 
   @@map("users")
 }
@@ -328,4 +329,20 @@ model Session {
   user         User     @relation(fields: [userId], references: [userId], onDelete: Cascade)
 
   @@map("sessions")
+}
+
+// -----------------------------------------------------------------------------
+// TRACKING DOMAIN (MVP)
+// -----------------------------------------------------------------------------
+
+model UserAction {
+  id        String   @id @default(uuid())
+  action    String
+  details   String?
+  userId    String?  @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+
+  user User? @relation(fields: [userId], references: [userId], onDelete: SetNull)
+
+  @@map("user_actions")
 }

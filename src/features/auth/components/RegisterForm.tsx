@@ -2,6 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 import { registerUser } from '../actions/authActions';
+import { trackEvent } from '@/src/actions/track-event.action';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 
@@ -10,8 +11,14 @@ export function RegisterForm() {
   const router = useRouter();
 
   useEffect(() => {
+    trackEvent("REGISTER_VIEW");
+  }, []);
+
+  useEffect(() => {
     if (resultMessage === 'SUCCESS') {
-      router.push('/login');
+      trackEvent("REGISTER_SUBMIT").then(() => {
+        router.push('/login');
+      });
     }
   }, [resultMessage, router]);
 

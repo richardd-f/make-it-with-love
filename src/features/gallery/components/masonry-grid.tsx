@@ -4,13 +4,20 @@ import React, { useState } from "react";
 import { IGalleryPost } from "../interfaces/gallery.types";
 import { GalleryCard } from "./gallery-card";
 import { GalleryModal } from "./gallery-modal";
+import { trackEvent } from "@/src/actions/track-event.action";
 
 interface MasonryGridProps {
   posts: IGalleryPost[];
+  courseId?: string;
 }
 
-export function MasonryGrid({ posts }: MasonryGridProps) {
+export function MasonryGrid({ posts, courseId }: MasonryGridProps) {
   const [selectedPost, setSelectedPost] = useState<IGalleryPost | null>(null);
+
+  const handleCardClick = (post: IGalleryPost) => {
+    trackEvent("GALLERY_ZOOM_CLICK", courseId ? `courseId:${courseId}` : undefined);
+    setSelectedPost(post);
+  };
 
   if (posts.length === 0) {
     return (
@@ -31,7 +38,7 @@ export function MasonryGrid({ posts }: MasonryGridProps) {
             <GalleryCard 
               key={post.id} 
               post={post} 
-              onClick={setSelectedPost} 
+              onClick={handleCardClick} 
             />
           ))}
         </div>

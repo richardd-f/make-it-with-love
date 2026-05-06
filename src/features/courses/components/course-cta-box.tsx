@@ -3,11 +3,14 @@
 import React from "react";
 import { ICourseDetail } from "../interfaces/course.types";
 import { useRouter } from "next/navigation";
+import { trackEvent } from "@/src/actions/track-event.action";
+import { BookZoomButton } from "./book-zoom-button";
 
 export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
   const router = useRouter();
 
   const handleCheckoutNavigation = () => {
+    trackEvent("BUY_COURSE_CLICK", course.id);
     // Waitlist or Checkout intent
     alert(`Proceeding to checkout for ${course.title}`);
   };
@@ -61,7 +64,10 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
         </div>
       )}
 
-
+      {/* Book Zoom button for non-enrolled users */}
+      {!course.isOwned && (
+        <BookZoomButton courseId={course.id} courseTitle={course.title} />
+      )}
 
       <div className="text-center mt-2 opacity-80 text-sm flex items-center justify-center gap-2">
         <span>30-Day Happiness Guarantee</span>
