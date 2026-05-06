@@ -20,7 +20,7 @@ export function CourseDiyKitManager({ courseId, allKits, assignedKitIds }: Cours
   };
 
   return (
-    <div className="flex flex-col gap-5 w-full max-w-4xl bg-white/40 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-white/50 mt-8">
+    <div className="flex flex-col gap-5 w-full max-w-2xl bg-white/40 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-white/50 mt-8">
       <h2 className="text-3xl font-family-papernotes text-[var(--color-orange)]">Manage DIY Kits for Course</h2>
       <p className="font-sans text-sm text-foreground/70 mb-2">Select the DIY Kits to include in this course package.</p>
       
@@ -47,7 +47,7 @@ export function CourseDiyKitManager({ courseId, allKits, assignedKitIds }: Cours
                     : 'bg-[var(--color-orange)] text-white hover:opacity-90'
                   }`}
                 >
-                  {isAssigned ? 'Remove from Course' : 'Add to Course'}
+                  {isAssigned ? 'Remove' : 'Add'}
                 </button>
               </div>
             );

@@ -30,6 +30,14 @@ export function CourseVideoManager({ courseId, videos }: CourseVideoManagerProps
     }
   }, [editingVideo]);
 
+  // Reset state on success
+  useEffect(() => {
+    if ((updateResult as any)?.success || (addResult as any)?.success) {
+      setEditingVideo(null);
+      setUploadedUrl(null);
+    }
+  }, [updateResult, addResult]);
+
   const handleDelete = async (videoId: string) => {
     if (confirm('Are you sure you want to delete this video?')) {
       await deleteVideoFromCourse(videoId, courseId);
@@ -63,31 +71,33 @@ export function CourseVideoManager({ courseId, videos }: CourseVideoManagerProps
               <div className="flex gap-2">
                 <button 
                   onClick={() => setPreviewVideoUrl(video.url)}
-                  className="px-3 py-1 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-lg text-sm font-bold transition-colors flex items-center gap-1"
+                  className="p-2 bg-blue-100 hover:bg-blue-200 text-blue-600 rounded-full transition-colors flex items-center justify-center"
                   title="Preview Video"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <polygon points="5 3 19 12 5 21 5 3"></polygon>
                   </svg>
-                  Play
                 </button>
                 <button 
                   onClick={() => handleEdit(video)}
-                  className="px-3 py-1 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-lg text-sm font-bold transition-colors flex items-center gap-1"
+                  className="p-2 bg-yellow-100 hover:bg-yellow-200 text-yellow-700 rounded-full transition-colors flex items-center justify-center"
                   title="Edit Video"
                 >
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
                     <path d="M12 20h9"></path>
                     <path d="M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
                   </svg>
-                  Edit
                 </button>
                 <button 
                   onClick={() => handleDelete(video.id)}
-                  className="px-3 py-1 bg-red-100 hover:bg-red-200 text-red-600 rounded-lg text-sm font-bold transition-colors"
+                  className="p-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-full transition-colors flex items-center justify-center"
                   title="Delete Video"
                 >
-                  Delete
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M3 6h18"></path>
+                    <path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path>
+                    <path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path>
+                  </svg>
                 </button>
               </div>
             </div>
@@ -118,7 +128,6 @@ export function CourseVideoManager({ courseId, videos }: CourseVideoManagerProps
             (updateFormAction as any)(formData);
           } else {
             (addFormAction as any)(formData);
-            setUploadedUrl(null); // Reset only on successful add
           }
         }} className="flex flex-col gap-4">
           <input type="hidden" name="courseId" value={courseId} />

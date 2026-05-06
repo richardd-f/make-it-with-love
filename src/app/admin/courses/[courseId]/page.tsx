@@ -2,6 +2,7 @@ import { prisma } from "@/src/lib/prisma";
 import { CourseForm } from "@/src/features/admin/courses/components/CourseForm";
 import { CategoryDropdown } from "@/src/features/admin/courses/components/CategoryDropdown";
 import { CourseVideoManager } from "@/src/features/admin/courses/components/CourseVideoManager";
+import { CourseDiyKitManager } from "@/src/features/admin/diyKits/components/CourseDiyKitManager";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -16,12 +17,14 @@ export default async function AdminCourseDetailPage(props: { params: Promise<{ c
 
   let course = null;
   let assignedCategoryIds: string[] = [];
+  let assignedKitIds: string[] = [];
 
   if (!isNew) {
     course = await prisma.course.findUnique({
       where: { id: courseId },
       include: {
         courseCategories: true,
+        courseKits: true,
         videos: {
           orderBy: { title: 'asc' }
         }
@@ -33,10 +36,15 @@ export default async function AdminCourseDetailPage(props: { params: Promise<{ c
     }
 
     assignedCategoryIds = course.courseCategories.map(cc => cc.categoryId);
+    assignedKitIds = course.courseKits.map(ck => ck.diyKitsId);
   }
 
   const allCategories = await prisma.category.findMany({
     orderBy: { category: 'asc' }
+  });
+
+  const allKits = await prisma.diyKit.findMany({
+    orderBy: { name: 'asc' }
   });
 
   return (
@@ -45,11 +53,6 @@ export default async function AdminCourseDetailPage(props: { params: Promise<{ c
         <Link href="/admin/courses" className="text-[var(--color-pink)] font-bold hover:underline">
           &larr; Back to Courses
         </Link>
-        {!isNew && (
-          <Link href={`/admin/courses/${params.courseId}/diyKits`} className="px-6 py-2 bg-[var(--color-orange)] hover:bg-[var(--color-red)] text-white font-bold rounded-full shadow-md font-family-papernotes transition-colors">
-            Manage DIY Kits
-          </Link>
-        )}
       </div>
 
       <CourseForm course={course || undefined} />
@@ -60,6 +63,11 @@ export default async function AdminCourseDetailPage(props: { params: Promise<{ c
             courseId={courseId} 
             allCategories={allCategories} 
             assignedCategoryIds={assignedCategoryIds} 
+          />
+          <CourseDiyKitManager 
+            courseId={courseId}
+            allKits={allKits}
+            assignedKitIds={assignedKitIds}
           />
           <CourseVideoManager 
             courseId={courseId}
