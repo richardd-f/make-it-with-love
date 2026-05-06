@@ -8,7 +8,8 @@ export const metadata = {
   title: "Manage Course DIY Kits | Make It With Love",
 };
 
-export default async function AdminCourseDiyKitsPage({ params }: { params: { courseId: string } }) {
+export default async function AdminCourseDiyKitsPage(props: { params: Promise<{ courseId: string }> }) {
+  const params = await props.params;
   const course = await prisma.course.findUnique({
     where: { id: params.courseId },
     include: {

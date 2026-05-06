@@ -1,6 +1,7 @@
 import { prisma } from "@/src/lib/prisma";
 import { CourseForm } from "@/src/features/admin/courses/components/CourseForm";
 import { CategoryDropdown } from "@/src/features/admin/courses/components/CategoryDropdown";
+import { CourseVideoManager } from "@/src/features/admin/courses/components/CourseVideoManager";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
@@ -8,17 +9,22 @@ export const metadata = {
   title: "Edit Course | Make It With Love",
 };
 
-export default async function AdminCourseDetailPage({ params }: { params: { courseId: string } }) {
-  const isNew = params.courseId === 'new';
+export default async function AdminCourseDetailPage(props: { params: Promise<{ courseId: string }> }) {
+  const params = await props.params;
+  const courseId = params.courseId;
+  const isNew = courseId === 'new';
 
   let course = null;
   let assignedCategoryIds: string[] = [];
 
   if (!isNew) {
     course = await prisma.course.findUnique({
-      where: { id: params.courseId },
+      where: { id: courseId },
       include: {
         courseCategories: true,
+        videos: {
+          orderBy: { title: 'asc' }
+        }
       }
     });
 
@@ -49,11 +55,17 @@ export default async function AdminCourseDetailPage({ params }: { params: { cour
       <CourseForm course={course || undefined} />
       
       {!isNew && (
-        <CategoryDropdown 
-          courseId={params.courseId} 
-          allCategories={allCategories} 
-          assignedCategoryIds={assignedCategoryIds} 
-        />
+        <>
+          <CategoryDropdown 
+            courseId={courseId} 
+            allCategories={allCategories} 
+            assignedCategoryIds={assignedCategoryIds} 
+          />
+          <CourseVideoManager 
+            courseId={courseId}
+            videos={course?.videos || []}
+          />
+        </>
       )}
     </main>
   );

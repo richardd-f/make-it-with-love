@@ -1,6 +1,7 @@
 import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
+import { CreateCourseModal } from "@/src/features/admin/courses/components/CreateCourseModal";
 
 export const metadata = {
   title: "Admin Courses | Make It With Love",
@@ -13,11 +14,9 @@ export default async function AdminCoursesPage() {
 
   return (
     <main className="relative flex-1 p-6 md:p-12 w-full max-w-7xl mx-auto flex flex-col gap-8 min-h-[calc(100vh-100px)]">
-      <div className="flex justify-between items-center z-10">
+      <div className="flex justify-between items-center z-50">
         <h1 className="text-5xl font-family-papernotes text-[var(--color-pink)]">Manage Courses</h1>
-        <Link href="/admin/courses/new" className="px-6 py-3 bg-[var(--color-green)] hover:bg-[var(--color-pink)] text-white font-bold text-xl rounded-full shadow-md font-family-papernotes transition-colors">
-          + New Course
-        </Link>
+        <CreateCourseModal />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 z-10">
