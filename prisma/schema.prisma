@@ -127,6 +127,7 @@ model Course {
   id              String   @id @default(uuid())
   name            String
   description     String?
+  imgUrl          String?   @map("img_url")
   minAge          Int      @map("min_age")
   price           Float
   amountOfMeeting Int      @map("amount_of_meeting")

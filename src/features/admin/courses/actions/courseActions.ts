@@ -11,6 +11,8 @@ export async function createCourse(prevState: any, formData: FormData) {
   const price = parseFloat(formData.get('price') as string);
   const amountOfMeeting = parseInt(formData.get('amountOfMeeting') as string, 10);
 
+  const imgUrl = formData.get('imgUrl') as string;
+
   if (!name || isNaN(minAge) || isNaN(price) || isNaN(amountOfMeeting)) {
     return { error: 'Missing required fields or invalid numbers' };
   }
@@ -21,6 +23,7 @@ export async function createCourse(prevState: any, formData: FormData) {
       data: {
         name,
         description,
+        imgUrl,
         minAge,
         price,
         amountOfMeeting,
@@ -42,6 +45,8 @@ export async function updateCourse(courseId: string, prevState: any, formData: F
   const price = parseFloat(formData.get('price') as string);
   const amountOfMeeting = parseInt(formData.get('amountOfMeeting') as string, 10);
 
+  const imgUrl = formData.get('imgUrl') as string;
+
   if (!name || isNaN(minAge) || isNaN(price) || isNaN(amountOfMeeting)) {
     return { error: 'Missing required fields or invalid numbers' };
   }
@@ -52,6 +57,7 @@ export async function updateCourse(courseId: string, prevState: any, formData: F
       data: {
         name,
         description,
+        imgUrl,
         minAge,
         price,
         amountOfMeeting,
