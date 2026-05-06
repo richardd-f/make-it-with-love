@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { trackSubscriptionClick } from "../actions/track-subscription.action";
+import { trackEvent } from "@/src/actions/track-event.action";
 
 interface SubscribeButtonProps {
   planName: string;
@@ -13,7 +13,7 @@ export function SubscribeButton({ planName }: SubscribeButtonProps) {
 
   const handleClick = async () => {
     setIsClicked(true);
-    await trackSubscriptionClick(planName);
+    await trackEvent("BUY_SUBSCRIPTION_CLICK", planName);
     
     // For MVP, we just show a thank you message or alert
     alert("Thank you for your interest! This feature is coming soon.");

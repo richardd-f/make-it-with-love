@@ -55,7 +55,7 @@ export default async function VideoPage({
               controls
               poster={course.thumbnailUrl}
             >
-              <source src={course.videoPreviewUrl} type="video/mp4" />
+              <source src={currentContent.videoUrl || course.videoPreviewUrl} type="video/mp4" />
               Your browser does not support the video tag.
             </video>
           </div>
