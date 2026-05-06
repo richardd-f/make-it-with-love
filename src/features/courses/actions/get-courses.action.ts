@@ -108,7 +108,7 @@ export async function getCourses(
       price: course.price,
       category: categoryName,
       ageRange: `${course.minAge}+`,
-      thumbnailUrl: `/images/assets/${DECOR_IMAGES[decorIndex]}`,
+      thumbnailUrl: course.imgUrl || `/images/assets/${DECOR_IMAGES[decorIndex]}`,
       tags: [],
     };
   });
