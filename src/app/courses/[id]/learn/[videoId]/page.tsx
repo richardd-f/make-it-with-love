@@ -16,9 +16,10 @@ export default async function VideoPage({
     return notFound();
   }
 
-  if (!course.isOwned) {
-    redirect(`/courses/${course.id}`);
-  }
+  // Test mode: Everyone can access the learning path
+  // if (!course.isOwned) {
+  //   redirect(`/courses/${course.id}`);
+  // }
 
   const currentIndex = course.contents.findIndex((c) => c.id === resolvedParams.videoId);
 

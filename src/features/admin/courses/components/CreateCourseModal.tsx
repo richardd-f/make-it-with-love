@@ -3,7 +3,7 @@
 import { useState } from 'react';
 import { CourseForm } from './CourseForm';
 
-export function CreateCourseModal() {
+export function CreateCourseModal({ mentors = [] }: { mentors?: { id: string; name: string }[] }) {
   const [isOpen, setIsOpen] = useState(false);
 
   return (
@@ -31,7 +31,7 @@ export function CreateCourseModal() {
             
             {/* Reusing CourseForm. We will override its styling slightly via the parent wrapper so it looks good in a modal. */}
             <div className="w-full">
-              <CourseForm />
+              <CourseForm mentors={mentors} />
             </div>
           </div>
         </div>

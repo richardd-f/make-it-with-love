@@ -47,6 +47,11 @@ export default async function AdminCourseDetailPage(props: { params: Promise<{ c
     orderBy: { name: 'asc' }
   });
 
+  const mentors = await prisma.mentor.findMany({
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true }
+  });
+
   return (
     <main className="flex-1 p-6 md:p-12 w-full max-w-4xl mx-auto flex flex-col items-center">
       <div className="w-full flex justify-between items-center mb-6">
@@ -55,7 +60,7 @@ export default async function AdminCourseDetailPage(props: { params: Promise<{ c
         </Link>
       </div>
 
-      <CourseForm course={course || undefined} />
+      <CourseForm course={course || undefined} mentors={mentors} />
       
       {!isNew && (
         <>

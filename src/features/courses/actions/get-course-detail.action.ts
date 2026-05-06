@@ -37,6 +37,7 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
       _count: {
         select: { enrollments: true },
       },
+      mentor: true,
     },
   });
 
@@ -76,7 +77,7 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
   return {
     id: course.id,
     title: course.name,
-    author: "MakeitWithLove",
+    author: course.mentor?.name || "MakeitWithLove",
     rating: 0,
     totalReviews: 0,
     price: course.price,

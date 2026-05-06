@@ -18,6 +18,7 @@ export async function getEventSummaries(): Promise<EventSummary[]> {
     "GALLERY_ZOOM_CLICK",
     "GALLERY_ADD_IMAGE_CLICK",
     "BOOK_ZOOM_MEETING_CLICK",
+    "TRY_AR_FEATURE_CLICK",
   ];
 
   const results = await Promise.all(

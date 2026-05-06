@@ -9,21 +9,46 @@ export const metadata = {
 
 export default async function AdminCoursesPage() {
   const courses = await prisma.course.findMany({
-    orderBy: { createdAt: 'desc' }
+    orderBy: { createdAt: 'desc' },
+    include: {
+      courseCategories: {
+        include: { category: true }
+      }
+    }
+  });
+
+  const mentors = await prisma.mentor.findMany({
+    orderBy: { name: 'asc' },
+    select: { id: true, name: true }
   });
 
   return (
     <main className="relative flex-1 p-6 md:p-12 w-full max-w-7xl mx-auto flex flex-col gap-8 min-h-[calc(100vh-100px)]">
       <div className="flex justify-between items-center z-50">
         <h1 className="text-5xl font-family-papernotes text-[var(--color-pink)]">Manage Courses</h1>
-        <CreateCourseModal />
+        <CreateCourseModal mentors={mentors} />
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 z-10">
         {courses.map(course => (
           <Link key={course.id} href={`/admin/courses/${course.id}`} className="group flex flex-col bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow hover:shadow-xl hover:scale-[1.02] transition-all">
             <h3 className="text-2xl font-bold font-sans text-foreground group-hover:text-[var(--color-pink)] transition-colors">{course.name}</h3>
+            {/* If mentor is missing for old courses, fallback gracefully */}
+            <p className="text-xs font-semibold text-foreground/50 mt-1 uppercase tracking-wide">
+              Instructor: {mentors.find(m => m.id === course.mentorId)?.name || "MakeitWithLove"}
+            </p>
             <p className="text-sm text-foreground/70 line-clamp-2 mt-2 flex-1">{course.description || "No description provided."}</p>
+            
+            {course.courseCategories.length > 0 && (
+              <div className="flex flex-wrap gap-2 mt-3">
+                {course.courseCategories.map((cc) => (
+                  <span key={cc.categoryId} className="text-xs bg-[var(--color-green)] text-white px-2 py-1 rounded-full font-semibold">
+                    {cc.category.category}
+                  </span>
+                ))}
+              </div>
+            )}
+
             <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center text-sm font-semibold">
               <span className="text-[var(--color-green)]">${course.price.toFixed(2)}</span>
               <span className="text-foreground/60">{course.amountOfMeeting} Meetings</span>

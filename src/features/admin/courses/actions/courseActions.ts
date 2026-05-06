@@ -10,6 +10,7 @@ export async function createCourse(prevState: any, formData: FormData) {
   const minAge = parseInt(formData.get('minAge') as string, 10);
   const price = parseFloat(formData.get('price') as string);
   const amountOfMeeting = parseInt(formData.get('amountOfMeeting') as string, 10);
+  const mentorId = formData.get('mentorId') as string;
 
   const imgUrl = formData.get('imgUrl') as string;
 
@@ -27,6 +28,7 @@ export async function createCourse(prevState: any, formData: FormData) {
         minAge,
         price,
         amountOfMeeting,
+        mentorId,
       },
     });
   } catch (error) {
@@ -44,6 +46,7 @@ export async function updateCourse(courseId: string, prevState: any, formData: F
   const minAge = parseInt(formData.get('minAge') as string, 10);
   const price = parseFloat(formData.get('price') as string);
   const amountOfMeeting = parseInt(formData.get('amountOfMeeting') as string, 10);
+  const mentorId = formData.get('mentorId') as string;
 
   const imgUrl = formData.get('imgUrl') as string;
 
@@ -61,6 +64,7 @@ export async function updateCourse(courseId: string, prevState: any, formData: F
         minAge,
         price,
         amountOfMeeting,
+        mentorId,
       },
     });
   } catch (error) {

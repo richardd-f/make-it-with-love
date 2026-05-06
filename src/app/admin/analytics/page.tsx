@@ -9,6 +9,7 @@ const EVENT_LABELS: Record<string, { label: string; color: string }> = {
   GALLERY_ZOOM_CLICK: { label: "Gallery Image Zooms", color: "#f79d1c" },
   GALLERY_ADD_IMAGE_CLICK: { label: "Add to Gallery Clicks", color: "#ea7c9d" },
   BOOK_ZOOM_MEETING_CLICK: { label: "Book Zoom Meeting Clicks", color: "#32a569" },
+  TRY_AR_FEATURE_CLICK: { label: "Try AR Feature Clicks", color: "#ea7c9d" },
 };
 
 function formatDate(date: Date | null) {
@@ -87,7 +88,7 @@ export default async function AdminAnalyticsPage() {
       {/* Booking Interest by Course */}
       {bookingsByCourse.length > 0 && (
         <section>
-          <h2 className="font-family-papernotes text-3xl text-gray-700 mb-6">🎥 Zoom Booking Interest by Course</h2>
+          <h2 className="font-family-papernotes text-3xl text-gray-700 mb-6">Zoom Booking Interest by Course</h2>
           <div className="bg-white rounded-3xl shadow-md overflow-hidden">
             <table className="w-full text-sm">
               <thead className="bg-[#f6e5c4] text-gray-700">

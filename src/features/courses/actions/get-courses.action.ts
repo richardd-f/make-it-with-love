@@ -84,7 +84,8 @@ export async function getCourses(
           include: {
             category: true
           }
-        }
+        },
+        mentor: true
       }
     }),
     prisma.course.count({ where: whereClause })
@@ -102,7 +103,7 @@ export async function getCourses(
     return {
       id: course.id,
       title: course.name,
-      author: "MIWL Instructor", // Default placeholder
+      author: course.mentor?.name || "MakeitWithLove",
       rating: 5.0, // Default placeholder
       totalReviews: 0, // Default placeholder
       price: course.price,

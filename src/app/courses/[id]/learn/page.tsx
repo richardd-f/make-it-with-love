@@ -11,9 +11,10 @@ export default async function LearnPage({ params }: { params: Promise<{ id: stri
     return notFound();
   }
 
-  if (!course.isOwned) {
-    redirect(`/courses/${course.id}`);
-  }
+  // Test mode: Everyone can access the learning path
+  // if (!course.isOwned) {
+  //   redirect(`/courses/${course.id}`);
+  // }
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8 py-12 flex flex-col items-center">

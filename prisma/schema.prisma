@@ -131,8 +131,10 @@ model Course {
   minAge          Int      @map("min_age")
   price           Float
   amountOfMeeting Int      @map("amount_of_meeting")
+  mentorId        String?  @map("mentor_id")
   createdAt       DateTime @default(now()) @map("created_at")
 
+  mentor           Mentor?  @relation(fields: [mentorId], references: [id])
   videos           Video[]
   courseCategories CourseCategory[]
   courseKits       CourseKit[]
@@ -267,6 +269,7 @@ model Mentor {
   description String?
   photo       String?
 
+  courses        Course[]
   availabilities MentorAvailability[]
 
   @@map("mentor")

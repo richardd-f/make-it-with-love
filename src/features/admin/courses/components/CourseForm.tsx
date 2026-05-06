@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { Course } from '@/src/generated/prisma/client';
 import { UploadButton } from '@/src/components/UploadButton';
 
-export function CourseForm({ course }: { course?: Course }) {
+export function CourseForm({ course, mentors = [] }: { course?: Course; mentors?: { id: string; name: string }[] }) {
   const isUpdating = !!course;
   const action = isUpdating ? updateCourse.bind(null, course.id) : createCourse;
   const [result, formAction, isPending] = useActionState(action as any, undefined);
@@ -53,6 +53,19 @@ export function CourseForm({ course }: { course?: Course }) {
             <p className="text-xs text-foreground/50 mt-2">Upload a thumbnail image for this course.</p>
           </div>
         </div>
+      </div>
+
+      <div className="flex flex-col gap-1">
+        <label className="font-sans font-semibold text-foreground/80 ml-2" htmlFor="mentorId">Instructor / Mentor</label>
+        <select
+          className="w-full px-5 py-3 rounded-2xl bg-white/70 border-2 border-[var(--color-pink)]/30 focus:border-[var(--color-pink)] outline-none appearance-none"
+          id="mentorId" name="mentorId" required defaultValue={course?.mentorId || ""}
+        >
+          <option value="" disabled>Select a mentor</option>
+          {mentors.map(mentor => (
+            <option key={mentor.id} value={mentor.id}>{mentor.name}</option>
+          ))}
+        </select>
       </div>
 
       <div className="flex flex-col gap-1">

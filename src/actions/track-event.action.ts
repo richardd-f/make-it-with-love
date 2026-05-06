@@ -11,7 +11,8 @@ export type TrackingEventType =
   | "BUY_DIY_KIT_CLICK"
   | "GALLERY_ZOOM_CLICK"
   | "GALLERY_ADD_IMAGE_CLICK"
-  | "BOOK_ZOOM_MEETING_CLICK";
+  | "BOOK_ZOOM_MEETING_CLICK"
+  | "TRY_AR_FEATURE_CLICK";
 
 export async function trackEvent(action: TrackingEventType, details?: string) {
   try {

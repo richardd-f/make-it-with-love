@@ -38,6 +38,7 @@ export async function getEnrolledCourses(): Promise<IEnrolledCourse[]> {
           videos: {
             select: { id: true },
           },
+          mentor: true,
         },
       },
     },
@@ -60,7 +61,7 @@ export async function getEnrolledCourses(): Promise<IEnrolledCourse[]> {
     return {
       id: course.id,
       title: course.name,
-      author: "MakeitWithLove",
+      author: course.mentor?.name || "MakeitWithLove",
       rating: 0,
       totalReviews: 0,
       price: course.price,
