@@ -3,7 +3,7 @@
 import { useState, useActionState, useEffect } from 'react';
 import { UploadButton } from '@/src/components/UploadButton';
 import { addVideoToCourse, deleteVideoFromCourse, updateVideoInCourse } from '../actions/videoActions';
-import { Video } from '@/src/generated/prisma/client';
+import { Video } from '@prisma/client';
 
 type CourseVideoManagerProps = {
   courseId: string;

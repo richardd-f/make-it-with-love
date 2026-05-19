@@ -3,7 +3,7 @@
 import { useActionState, useState } from 'react';
 import { createCourse, updateCourse } from '../actions/courseActions';
 import Link from 'next/link';
-import { Course } from '@/src/generated/prisma/client';
+import { Course } from '@prisma/client';
 import { UploadButton } from '@/src/components/UploadButton';
 
 export function CourseForm({ course }: { course?: Course }) {
