@@ -26,6 +26,12 @@ RUN pnpm prisma generate
 RUN pnpm build
 RUN ls -la .next && ls -la .next/standalone
 
+# Prisma 7 generates a hash-based runtime package (e.g. @prisma/client-<hash>) in
+# node_modules during `prisma generate`. Next.js standalone file-tracing does not
+# capture it because it isn't a declared npm dependency. Copy the whole @prisma
+# scope (following pnpm symlinks with -L) so the package is present at runtime.
+RUN cp -rL /app/node_modules/@prisma /app/.next/standalone/node_modules/
+
 # -------- Stage 2: Runtime --------
 FROM node:20-slim AS runner
 WORKDIR /app
@@ -48,12 +54,15 @@ COPY --from=builder /app/.next/static ./.next/static
 # Prisma schema and config (for migration and seeder)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
+# Generated TypeScript client is needed by the seeder (prisma/seed.ts imports from it)
+COPY --from=builder /app/src/generated ./src/generated
 
-# Install CLI tools and regenerate Prisma client for runtime
+# Install CLI tools for migration and seeder.
+# @prisma/client runtime is already present in node_modules (copied from builder above);
+# we re-declare it here so pnpm resolves its peer deps and keeps it consistent.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store && \
-    pnpm add prisma@7.2.0 tsx dotenv @prisma/client@7.2.0 @prisma/adapter-pg pg \
-    && pnpm prisma generate
+    pnpm add prisma@7.2.0 tsx dotenv @prisma/client@7.2.0 @prisma/adapter-pg pg
 
 EXPOSE 3000
 
