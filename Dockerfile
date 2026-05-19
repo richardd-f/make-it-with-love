@@ -1,6 +1,6 @@
 # -------- Stage 1: Build --------
 FROM node:20-slim AS builder
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
@@ -36,7 +36,7 @@ ENV NEXT_TELEMETRY_DISABLED=1
 ENV PNPM_HOME="/pnpm"
 ENV PATH="$PNPM_HOME:/app/node_modules/.bin:$PATH"
 
-RUN corepack enable && corepack prepare pnpm@latest --activate
+RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
