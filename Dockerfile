@@ -30,7 +30,7 @@ RUN ls -la .next && ls -la .next/standalone
 # node_modules during `prisma generate`. Next.js standalone file-tracing does not
 # capture it because it isn't a declared npm dependency. Copy the whole @prisma
 # scope (following pnpm symlinks with -L) so the package is present at runtime.
-RUN cp -rL /app/node_modules/@prisma /app/.next/standalone/node_modules/
+# RUN cp -rL /app/node_modules/@prisma /app/.next/standalone/node_modules/
 
 # -------- Stage 2: Runtime --------
 FROM node:20-slim AS runner
@@ -62,7 +62,8 @@ COPY --from=builder /app/src/generated ./src/generated
 # we re-declare it here so pnpm resolves its peer deps and keeps it consistent.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store && \
-    pnpm add prisma@7.2.0 tsx dotenv @prisma/client@7.2.0 @prisma/adapter-pg pg
+    pnpm add prisma@7.2.0 tsx dotenv @prisma/client@7.2.0 @prisma/adapter-pg pg \
+    && pnpm prisma generate
 
 EXPOSE 3000
 
