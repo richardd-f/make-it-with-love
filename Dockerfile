@@ -54,8 +54,6 @@ COPY --from=builder /app/.next/static ./.next/static
 # Prisma schema and config (for migration and seeder)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
-# Generated TypeScript client is needed by the seeder (prisma/seed.ts imports from it)
-COPY --from=builder /app/src/generated ./src/generated
 
 # Install CLI tools for migration and seeder.
 # @prisma/client runtime is already present in node_modules (copied from builder above);
