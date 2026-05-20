@@ -9,12 +9,14 @@ type NavItem = {
   mode: 'single' | 'multiple';
   href?: string;
   adminOnly?: boolean;
+  highlighted?: boolean;
   children?: { label: string; href: string }[];
 };
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'My Courses', mode: 'single', href: '/myCourse' },
   { label: 'Look for courses', mode: 'single', href: '/courses' },
+  { label: 'Subscribe', mode: 'single', href: '/subscription', highlighted: true },
   {
     label: 'Admin',
     mode: 'multiple',
@@ -67,13 +69,23 @@ export function NavBarClient({ session, logoutAction }: NavBarClientProps) {
         {visibleNavItems.map((item, index) => (
           <div key={index} className="relative group">
             {item.mode === 'single' ? (
-              <Link
-                href={item.href!}
-                className="text-gray-700 font-bold hover:text-[#32a569] transition-colors"
-                style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}
-              >
-                {item.label}
-              </Link>
+              item.highlighted ? (
+                <Link
+                  href={item.href!}
+                  className="px-5 py-2 bg-gradient-to-r from-[#e4552c] to-[#f79d1c] hover:from-[#f79d1c] hover:to-[#e4552c] text-white font-bold rounded-full shadow-md transition-all hover:shadow-lg hover:-translate-y-0.5"
+                  style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}
+                >
+                  {item.label} ✨
+                </Link>
+              ) : (
+                <Link
+                  href={item.href!}
+                  className="text-gray-700 font-bold hover:text-[#32a569] transition-colors"
+                  style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}
+                >
+                  {item.label}
+                </Link>
+              )
             ) : (
               <div className="relative group/dropdown cursor-pointer">
                 <span
@@ -176,13 +188,23 @@ export function NavBarClient({ session, logoutAction }: NavBarClientProps) {
             {visibleNavItems.map((item, index) => (
               <div key={index} className="flex flex-col border-b border-gray-100 pb-4">
                 {item.mode === 'single' ? (
-                  <Link
-                    href={item.href!}
-                    onClick={() => setIsMobileMenuOpen(false)}
-                    className="text-2xl font-bold text-gray-800 hover:text-[#32a569] transition-colors font-family-papernotes tracking-wide"
-                  >
-                    {item.label}
-                  </Link>
+                  item.highlighted ? (
+                    <Link
+                      href={item.href!}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="inline-block w-full py-4 text-center bg-gradient-to-r from-[#e4552c] to-[#f79d1c] text-white font-bold rounded-2xl shadow-md transition-all font-family-papernotes tracking-widest text-2xl"
+                    >
+                      {item.label} ✨
+                    </Link>
+                  ) : (
+                    <Link
+                      href={item.href!}
+                      onClick={() => setIsMobileMenuOpen(false)}
+                      className="text-2xl font-bold text-gray-800 hover:text-[#32a569] transition-colors font-family-papernotes tracking-wide"
+                    >
+                      {item.label}
+                    </Link>
+                  )
                 ) : (
                   <div className="flex flex-col gap-3">
                     <span className="text-2xl font-bold text-[var(--color-orange)] font-family-papernotes tracking-wide">
