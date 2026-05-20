@@ -63,8 +63,6 @@ RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store && \
     pnpm add prisma@7.2.0 tsx dotenv @prisma/client@7.2.0 @prisma/adapter-pg pg
 
-COPY --from=builder /app/.next/standalone/node_modules/@prisma ./node_modules/@prisma
-
 EXPOSE 3000
 
 CMD ["node" , "server.js"]
