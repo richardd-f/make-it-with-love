@@ -38,11 +38,8 @@ WORKDIR /app
 
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
+ENV PATH="/app/node_modules/.bin:$PATH"
 
-ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:/app/node_modules/.bin:$PATH"
-
-RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
@@ -54,15 +51,11 @@ COPY --from=builder /app/.next/static ./.next/static
 # Prisma schema and config (for migration and seeder)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
-COPY --from=builder /app/pnpm-workspace.yaml ./
 
-# Install CLI tools for migration and seeder.
-# @prisma/client runtime is already present in node_modules (copied from builder above);
-# we re-declare it here so pnpm resolves its peer deps and keeps it consistent.
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
-    pnpm config set store-dir /pnpm/store && \
-    pnpm add prisma@7.2.0 tsx dotenv @prisma/client@7.2.0 @prisma/adapter-pg pg
-RUN DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" pnpm prisma generate
+# Install only the migration/seed CLI tools (prisma, tsx, dotenv) using npm.
+# npm will NOT touch the pre-generated @prisma/client that was copied from the
+# builder's standalone output via `cp -rL`, so the generated client stays intact.
+RUN npm install --save prisma@7.2.0 tsx dotenv
 
 EXPOSE 3000
 
