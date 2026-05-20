@@ -61,8 +61,9 @@ COPY --from=builder /app/pnpm-workspace.yaml ./
 # we re-declare it here so pnpm resolves its peer deps and keeps it consistent.
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store && \
-    pnpm add prisma@7.2.0 tsx dotenv @prisma/client@7.2.0 @prisma/adapter-pg pg \
-    && pnpm prisma generate
+    pnpm add prisma@7.2.0 tsx dotenv @prisma/client@7.2.0 @prisma/adapter-pg pg
+
+COPY --from=builder /app/.next/standalone/node_modules/@prisma ./node_modules/@prisma
 
 EXPOSE 3000
 
