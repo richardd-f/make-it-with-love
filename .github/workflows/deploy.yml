@@ -79,6 +79,10 @@ jobs:
             
             # Restart containers with the new image
             docker compose up -d
-            
+
+            # Print web container logs so startup errors are visible in CI
+            sleep 20
+            docker compose logs --tail=80 web || true
+
             # Optional: Clean up old images to save disk space
             docker image prune -f

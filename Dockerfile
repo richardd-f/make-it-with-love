@@ -39,7 +39,9 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV PNPM_HOME="/pnpm"
-ENV PATH="$PNPM_HOME:/app/node_modules/.bin:$PATH"
+# /tools/node_modules/.bin is prepended so prisma/tsx/dotenv binaries take
+# precedence and are found without pnpm ever touching /app/node_modules.
+ENV PATH="$PNPM_HOME:/tools/node_modules/.bin:/app/node_modules/.bin:$PATH"
 
 RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
@@ -53,18 +55,17 @@ COPY --from=builder /app/.next/static ./.next/static
 # Prisma schema and config (for migration and seeder)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
-COPY --from=builder /app/pnpm-workspace.yaml ./
 
-# The standalone package.json is a copy of the full project manifest and lists
-# ALL dependencies. Running `pnpm add` against it causes pnpm to reconcile every
-# declared package — including @prisma/client — replacing the pre-generated WASM
-# client (copied via cp -rL) with a fresh un-generated symlink. Replace it with a
-# minimal manifest first so pnpm only installs the three CLI tools we actually need.
-RUN echo '{"name":"runner","private":true}' > package.json
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+# Install CLI tools (prisma, tsx, dotenv) in an isolated /tools directory.
+# Running pnpm here instead of inside /app ensures pnpm never reconciles or
+# rewrites the pre-generated @prisma/client that was copied via cp -rL in the
+# builder stage. /app/node_modules remains exactly as the builder left it.
+WORKDIR /tools
+RUN --mount=type=cache,id=pnpm-tools,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store && \
     pnpm add prisma@7.2.0 tsx dotenv
 
+WORKDIR /app
 EXPOSE 3000
 
-CMD ["node" , "server.js"]
+CMD ["node", "server.js"]
