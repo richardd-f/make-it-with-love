@@ -20,10 +20,10 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
 
   const galleryPosts = await getGalleryPosts(course.id);
 
-  if (course.isOwned) {
-    const { redirect } = await import("next/navigation");
-    redirect(`/courses/${course.id}/learn`);
-  }
+  // if (course.isOwned) {
+  //   const { redirect } = await import("next/navigation");
+  //   redirect(`/courses/${course.id}/learn`);
+  // }
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-12">
