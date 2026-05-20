@@ -55,11 +55,12 @@ COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
 COPY --from=builder /app/pnpm-workspace.yaml ./
 
-# Install ONLY the CLI tools needed for migration and seeder.
-# @prisma/client, @prisma/adapter-pg, and pg are intentionally excluded:
-# they are already present as generated/real files in node_modules from the
-# builder's `cp -rL` copy. Adding them here would cause pnpm to replace those
-# real directories with symlinks to its store, breaking the generated client.
+# The standalone package.json is a copy of the full project manifest and lists
+# ALL dependencies. Running `pnpm add` against it causes pnpm to reconcile every
+# declared package — including @prisma/client — replacing the pre-generated WASM
+# client (copied via cp -rL) with a fresh un-generated symlink. Replace it with a
+# minimal manifest first so pnpm only installs the three CLI tools we actually need.
+RUN echo '{"name":"runner","private":true}' > package.json
 RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store && \
     pnpm add prisma@7.2.0 tsx dotenv
