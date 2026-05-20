@@ -42,13 +42,14 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
 
   if (!course) return null;
 
-  // Check if the current user is enrolled
+  // Check if the current user is enrolled OR has an active subscription
   let isOwned = false;
   if (userId) {
-    const enrollment = await prisma.enrollment.findFirst({
-      where: { userId, courseId: id },
-    });
-    isOwned = !!enrollment;
+    const [enrollment, activeSubscription] = await Promise.all([
+      prisma.enrollment.findFirst({ where: { userId, courseId: id } }),
+      prisma.userSubscription.findFirst({ where: { userId, status: "active" } }),
+    ]);
+    isOwned = !!(enrollment || activeSubscription);
   }
 
   // Get category
