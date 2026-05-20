@@ -1,10 +1,10 @@
 # -------- Stage 1: Build --------
-FROM node:20-slim AS builder
+FROM node:22-slim AS builder
 RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
 WORKDIR /app
 
 COPY package.json pnpm-lock.yaml ./
-RUN --mount=type=cache,id=pnpm,target=/pnpm/store \
+RUN --mount=type=cache,id=pnpm-v2,target=/pnpm/store \
     pnpm config set store-dir /pnpm/store && \
     pnpm i --frozen-lockfile
 
@@ -33,7 +33,7 @@ RUN ls -la .next && ls -la .next/standalone
 # RUN cp -rL /app/node_modules/@prisma /app/.next/standalone/node_modules/
 
 # -------- Stage 2: Runtime --------
-FROM node:20-slim AS runner
+FROM node:22-slim AS runner
 WORKDIR /app
 
 ENV NODE_ENV=production
@@ -54,6 +54,7 @@ COPY --from=builder /app/.next/static ./.next/static
 # Prisma schema and config (for migration and seeder)
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/prisma.config.ts ./
+COPY --from=builder /app/pnpm-workspace.yaml ./
 
 # Install CLI tools for migration and seeder.
 # @prisma/client runtime is already present in node_modules (copied from builder above);
