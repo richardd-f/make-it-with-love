@@ -30,7 +30,7 @@ RUN ls -la .next && ls -la .next/standalone
 # node_modules during `prisma generate`. Next.js standalone file-tracing does not
 # capture it because it isn't a declared npm dependency. Copy the whole @prisma
 # scope (following pnpm symlinks with -L) so the package is present at runtime.
-# RUN cp -rL /app/node_modules/@prisma /app/.next/standalone/node_modules/
+RUN cp -rL /app/node_modules/@prisma /app/.next/standalone/node_modules/
 
 # -------- Stage 2: Runtime --------
 FROM node:22-slim AS runner
