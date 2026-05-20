@@ -3,7 +3,12 @@
     "allow": [
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(git -C \"D:\\\\Web UC\\\\MakeItWithLove\" status)",
+      "Bash(git -C \"D:\\\\Web UC\\\\MakeItWithLove\" diff)",
+      "Bash(git -C \"D:\\\\Web UC\\\\MakeItWithLove\" log --oneline -5)",
+      "Bash(git checkout *)",
+      "Bash(gh pr create --title 'fix: resolve CI/CD pnpm approve-builds and @prisma/debug missing' --body ' *)"
     ]
   }
 }
