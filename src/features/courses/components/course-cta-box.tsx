@@ -1,22 +1,36 @@
 "use client";
 
-import React from "react";
+import React, { useState, useTransition } from "react";
 import { ICourseDetail } from "../interfaces/course.types";
 import { useRouter } from "next/navigation";
 import { trackEvent } from "@/src/actions/track-event.action";
 import { BookZoomButton } from "./book-zoom-button";
+import { claimCourse } from "../actions/claim-course.action";
+import { toast } from "react-toastify";
 
 export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
   const router = useRouter();
+  const [isPending, startTransition] = useTransition();
 
   const handleCheckoutNavigation = () => {
     trackEvent("BUY_COURSE_CLICK", course.id);
-    // Waitlist or Checkout intent
     alert(`Proceeding to checkout for ${course.title}`);
   };
 
   const handleLearnNavigation = () => {
     router.push(`/courses/${course.id}/learn`);
+  };
+
+  const handleClaim = () => {
+    startTransition(async () => {
+      const result = await claimCourse(course.id);
+      if (result.success) {
+        toast.success(result.message);
+        router.refresh();
+      } else {
+        toast.error(result.message);
+      }
+    });
   };
 
   return (
@@ -26,7 +40,6 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
 
       <h3 className="text-3xl font-family-papernotes drop-shadow-md">Course Access</h3>
 
-      {/* Price display if not owned */}
       {!course.isOwned && (
         <div className="flex flex-col items-center justify-center my-4">
           <span className="text-gray-200 text-lg uppercase tracking-widest font-bold mb-1">Total Including Kit</span>
@@ -36,13 +49,52 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
         </div>
       )}
 
+      {/* Subscription meeting quota display for enrolled users */}
+      {course.isOwned && (
+        <div className="flex flex-col gap-2 text-sm bg-white/10 rounded-2xl p-4">
+          {course.meetingsAmountLeft !== undefined && (
+            <div className="flex justify-between">
+              <span>Course meetings left</span>
+              <span className="font-bold">{course.meetingsAmountLeft}</span>
+            </div>
+          )}
+          {course.subscriptionMeetingsLeft !== undefined && (
+            <div className="flex justify-between">
+              <span>Subscription meetings left</span>
+              <span className="font-bold">{course.subscriptionMeetingsLeft}</span>
+            </div>
+          )}
+        </div>
+      )}
+
       {course.isOwned ? (
-        <button
-          onClick={handleLearnNavigation}
-          className="w-full bg-[#f79d1c] hover:bg-[#e68f12] text-white font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest"
-        >
-          Continue Learning!
-        </button>
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={handleLearnNavigation}
+            className="w-full bg-[#f79d1c] hover:bg-[#e68f12] text-white font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest"
+          >
+            Start Learning →
+          </button>
+          <a
+            href={`/courses/${course.id}/schedule`}
+            className="w-full border-2 border-white/40 hover:border-white text-white font-bold text-lg py-3 rounded-full transition-all font-family-papernotes uppercase tracking-widest text-center block"
+          >
+            Book a Meeting
+          </a>
+        </div>
+      ) : course.canClaim ? (
+        <div className="flex flex-col gap-3">
+          <button
+            onClick={handleClaim}
+            disabled={isPending}
+            className="w-full bg-[#ea7c9d] hover:bg-[#d86b8b] text-white font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest disabled:opacity-60 disabled:hover:scale-100"
+          >
+            {isPending ? "Claiming…" : `Claim Free (${course.coursesClaimedLeft} left)`}
+          </button>
+          <p className="text-white/70 text-xs">
+            Your subscription covers courses up to Rp 90,000
+          </p>
+        </div>
       ) : course.starterKit.inStock ? (
         <button
           onClick={handleCheckoutNavigation}
@@ -64,7 +116,6 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
         </div>
       )}
 
-      {/* Book Zoom button for non-enrolled users */}
       {!course.isOwned && (
         <BookZoomButton courseId={course.id} courseTitle={course.title} />
       )}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { NavBar } from "@/src/components/NavBar";
 import { BackgroundDecoration } from "@/src/components/BackgroundDecoration";
+import { ToastProvider } from "@/src/components/ToastProvider";
 import "./globals.css";
 import localFont from 'next/font/local';
 
@@ -36,6 +37,7 @@ export default function RootLayout({
         <BackgroundDecoration />
         <NavBar />
         {children}
+        <ToastProvider />
       </body>
     </html>
   );

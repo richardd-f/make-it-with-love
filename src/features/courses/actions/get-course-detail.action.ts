@@ -42,21 +42,44 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
 
   if (!course) return null;
 
-  // Check if the current user is enrolled OR has an active subscription
   let isOwned = false;
+  let isSubscribed = false;
+  let canClaim = false;
+  let coursesClaimedLeft = 0;
+  let meetingsAmountLeft: number | undefined;
+  let subscriptionMeetingsLeft: number | undefined;
+  let isWishlisted = false;
+
   if (userId) {
-    const [enrollment, activeSubscription] = await Promise.all([
+    const [enrollment, activeSubscription, wishlist] = await Promise.all([
       prisma.enrollment.findFirst({ where: { userId, courseId: id } }),
-      prisma.userSubscription.findFirst({ where: { userId, status: "active" } }),
+      prisma.userSubscription.findFirst({
+        where: { userId, status: "active" },
+        include: { subscription: true },
+      }),
+      prisma.wishlist.findFirst({ where: { userId, courseId: id } }),
     ]);
-    isOwned = !!(enrollment || activeSubscription);
+
+    isOwned = !!enrollment;
+    isSubscribed = !!activeSubscription;
+    isWishlisted = !!wishlist;
+
+    if (enrollment) {
+      meetingsAmountLeft = enrollment.meetingsAmountLeft;
+    }
+    if (activeSubscription) {
+      subscriptionMeetingsLeft = activeSubscription.meetingAdditionsLeft;
+      coursesClaimedLeft = activeSubscription.coursesClaimedLeft;
+      canClaim =
+        !enrollment &&
+        course.price <= 90000 &&
+        activeSubscription.coursesClaimedLeft > 0;
+    }
   }
 
-  // Get category
   const category =
     course.courseCategories[0]?.category.category || "General";
 
-  // Map starter kit from courseKits → diyKits
   const kits = course.courseKits.map((ck) => ck.diyKit);
   const starterKit = {
     tools: kits.length > 0 ? kits.map((k) => k.name) : ["DIY Kit (included)"],
@@ -65,12 +88,12 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
     inStock: kits.length > 0 ? kits.every((k) => k.stock > 0) : true,
   };
 
-  // Map videos to course contents
   const contents = course.videos.map((video, i) => ({
     id: video.id,
     title: video.title,
+    description: video.description || "",
     duration: "10:00",
-    isLocked: !isOwned && i > 0, // First video is always a preview
+    isLocked: !isOwned && i > 0,
     videoUrl: video.url,
   }));
 
@@ -89,6 +112,13 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
     videoPreviewUrl: course.videos[0]?.url || "",
     totalStudents: course._count.enrollments,
     isOwned,
+    isSubscribed,
+    canClaim,
+    coursesClaimedLeft,
+    meetingsAmountLeft,
+    subscriptionMeetingsLeft,
+    amountOfMeeting: course.amountOfMeeting,
+    isWishlisted,
     starterKit,
     contents,
     reviews: [],

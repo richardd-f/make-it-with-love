@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useMemo } from "react";
+import { toast } from "react-toastify";
 import { getAvailableSlots, bookAppointment } from "../actions/scheduling.action";
 import { ITimeSlotGroup, ITimeSlot } from "../interfaces/scheduling.types";
 import { DateCarousel } from "./date-carousel";
@@ -78,7 +79,9 @@ export function SchedulingBoard({ courseId }: { courseId: string }) {
       if (result.success) {
         setBookedSlotId(selectedSlot.id);
         setIsModalOpen(false);
-        // Optionally show a toast notification here
+        toast.success(result.message);
+      } else {
+        toast.error(result.message);
       }
     } catch (error) {
       console.error("Booking failed:", error);

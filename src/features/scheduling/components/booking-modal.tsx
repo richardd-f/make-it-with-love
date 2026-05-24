@@ -54,7 +54,7 @@ export function BookingModal({ isOpen, slot, onConfirm, onCancel, isBooking }: B
         {/* Body */}
         <div className="p-6 flex flex-col gap-6" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
           <p className="text-gray-700 text-lg text-center">
-            Are you sure you want to select this time with <span className="font-bold text-[#32a569]">{slot.mentor.name}</span>?
+            Are you sure you want to select this time with <span className="font-bold text-[#32a569]">{slot.teacher.name}</span>?
           </p>
 
           <div className="bg-gray-50 p-4 rounded-2xl flex flex-col items-center gap-2 border border-gray-100 shadow-inner">

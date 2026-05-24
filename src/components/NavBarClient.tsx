@@ -9,14 +9,19 @@ type NavItem = {
   mode: 'single' | 'multiple';
   href?: string;
   adminOnly?: boolean;
+  teacherOnly?: boolean;
+  userOnly?: boolean;
   hideWhenSubscribed?: boolean;
   children?: { label: string; href: string }[];
 };
 
 const NAV_ITEMS: NavItem[] = [
-  { label: 'My Courses', mode: 'single', href: '/myCourse' },
+  { label: 'My Courses', mode: 'single', href: '/myCourse', userOnly: true },
   { label: 'Look for courses', mode: 'single', href: '/courses' },
-  { label: 'Subscribe', mode: 'single', href: '/subscription', hideWhenSubscribed: true },
+  { label: 'Liked Courses', mode: 'single', href: '/liked-courses', userOnly: true },
+  { label: 'My Meetings', mode: 'single', href: '/my-meetings', userOnly: true },
+  { label: 'Subscribe', mode: 'single', href: '/subscription', hideWhenSubscribed: true, userOnly: true },
+  { label: 'My Courses', mode: 'single', href: '/teacher/courses', teacherOnly: true },
   {
     label: 'Admin',
     mode: 'multiple',
@@ -25,6 +30,7 @@ const NAV_ITEMS: NavItem[] = [
       { label: 'Courses', href: '/admin/courses' },
       { label: 'DIY Kits', href: '/admin/diyKits' },
       { label: 'Analytics', href: '/admin/analytics' },
+      { label: 'Teacher Requests', href: '/admin/teacher-enrollments' },
     ],
   },
 ];
@@ -45,10 +51,12 @@ export function NavBarClient({ session, isSubscribed, logoutAction }: NavBarClie
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const isAdmin = session?.user?.role === 'ADMIN';
+  const isTeacher = session?.user?.role === 'TEACHER';
 
-  // Filter items based on role and subscription status
   const visibleNavItems = NAV_ITEMS.filter((item) => {
     if (item.adminOnly && !isAdmin) return false;
+    if (item.teacherOnly && !isTeacher) return false;
+    if (item.userOnly && (isAdmin || isTeacher)) return false;
     if (item.hideWhenSubscribed && isSubscribed) return false;
     return true;
   });
