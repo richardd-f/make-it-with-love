@@ -13,6 +13,7 @@ datasource db {
 enum Role {
   USER
   ADMIN
+  TEACHER
 }
 
 model User {
@@ -24,16 +25,24 @@ model User {
   role      Role     @default(USER)
   createdAt DateTime @default(now()) @map("created_at")
 
+  // Teacher profile fields (null for USER/ADMIN)
+  bio       String?
+  photo     String?
+  expertise String?
+  phone     String?
+
   // Relations
-  subscriptions UserSubscription[]
-  transactions  Transaction[]
-  userVideos    UserVideo[]
-  carts         Cart[]
-  wishlists     Wishlist[]
-  enrollments   Enrollment[]
-  accounts      Account[]
-  sessions      Session[]
-  userActions   UserAction[]
+  subscriptions      UserSubscription[]
+  transactions       Transaction[]
+  userVideos         UserVideo[]
+  carts              Cart[]
+  wishlists          Wishlist[]
+  enrollments        Enrollment[]
+  accounts           Account[]
+  sessions           Session[]
+  userActions        UserAction[]
+  teacherEnrollments TeacherEnrollment[]
+  teacherSchedules   TeacherSchedule[]
 
   @@map("users")
 }
@@ -58,6 +67,7 @@ model UserSubscription {
   startDate            DateTime @map("start_date")
   status               String
   meetingAdditionsLeft Int      @map("meeting_additions_left")
+  coursesClaimedLeft   Int      @default(3) @map("courses_claimed_left")
 
   user         User         @relation(fields: [userId], references: [userId])
   subscription Subscription @relation(fields: [subscriptionId], references: [subscriptionId])
@@ -116,7 +126,7 @@ model UserVideo {
   videoId     String  @map("video_id")
   isDone      Boolean @default(false)
 
-  user  User  @relation(fields: [userId], references: [userId]) // Assuming your User model has userId as @id
+  user  User  @relation(fields: [userId], references: [userId])
   video Video @relation(fields: [videoId], references: [id])
 
   @@map("user_video")
@@ -126,18 +136,20 @@ model Course {
   id              String   @id @default(uuid())
   name            String
   description     String?
-  imgUrl          String?   @map("img_url")
+  imgUrl          String?  @map("img_url")
   minAge          Int      @map("min_age")
   price           Float
   amountOfMeeting Int      @map("amount_of_meeting")
   createdAt       DateTime @default(now()) @map("created_at")
 
-  videos           Video[]
-  courseCategories CourseCategory[]
-  courseKits       CourseKit[]
-  carts            Cart[]
-  wishlists        Wishlist[]
-  enrollments      Enrollment[]
+  videos             Video[]
+  courseCategories   CourseCategory[]
+  courseKits         CourseKit[]
+  carts              Cart[]
+  wishlists          Wishlist[]
+  enrollments        Enrollment[]
+  teacherEnrollments TeacherEnrollment[]
+  teacherSchedules   TeacherSchedule[]
 
   @@map("courses")
 }
@@ -210,11 +222,12 @@ model Wishlist {
   user   User   @relation(fields: [userId], references: [userId])
   course Course @relation(fields: [courseId], references: [id])
 
+  @@unique([userId, courseId])
   @@map("wishlists")
 }
 
 // -----------------------------------------------------------------------------
-// ENROLLMENT & MENTORING DOMAIN
+// ENROLLMENT & TEACHER DOMAIN
 // -----------------------------------------------------------------------------
 
 model Enrollment {
@@ -228,6 +241,7 @@ model Enrollment {
   imageGalleries ImageGallery[]
   meetings       Meeting[]
 
+  @@unique([userId, courseId])
   @@map("enrollment")
 }
 
@@ -243,57 +257,58 @@ model ImageGallery {
   @@map("image_gallery")
 }
 
-model Meeting {
-  id                   String  @id @default(uuid())
-  enrollmentId         String  @map("enrollment_id")
-  mentorAvailabilityId String? @map("mentor_availability_id")
-
-  enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
-
-  // Circular relationship handled gracefully: 
-  // 1. Where meeting holds the FK to availability
-  mentorAvailability MentorAvailability? @relation("AvailabilityToMeeting", fields: [mentorAvailabilityId], references: [id])
-
-  // 2. Where availability holds the FK to meeting
-  availabilities MentorAvailability[] @relation("MeetingToAvailability")
-
-  @@map("meeting")
+enum TeacherEnrollmentStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
 }
 
-model Mentor {
-  id          String  @id @default(uuid())
-  name        String
-  description String?
-  photo       String?
+model TeacherEnrollment {
+  id        String                  @id @default(uuid())
+  teacherId String                  @map("teacher_id")
+  courseId  String                  @map("course_id")
+  status    TeacherEnrollmentStatus @default(PENDING)
+  createdAt DateTime                @default(now()) @map("created_at")
 
-  availabilities MentorAvailability[]
+  teacher User   @relation(fields: [teacherId], references: [userId])
+  course  Course @relation(fields: [courseId], references: [id])
 
-  @@map("mentor")
+  @@unique([teacherId, courseId])
+  @@map("teacher_enrollment")
 }
 
-model MentorAvailability {
-  id        String                   @id @default(uuid())
-  mentorId  String                   @map("mentor_id")
-  meetingId String?                  @map("meeting_id")
-  startTime DateTime                 @map("start_time")
-  endTime   DateTime                 @map("end_time")
-  status    MentorAvailabilityStatus
-
-  mentor Mentor @relation(fields: [mentorId], references: [id])
-
-  // Circular relationship handled gracefully:
-  // 1. Where availability holds the FK to meeting
-  meeting Meeting? @relation("MeetingToAvailability", fields: [meetingId], references: [id])
-
-  // 2. Where meeting holds the FK to availability
-  meetings Meeting[] @relation("AvailabilityToMeeting")
-
-  @@map("mentor_availability")
-}
-
-enum MentorAvailabilityStatus {
+enum TeacherScheduleStatus {
   AVAILABLE
   BOOKED
+}
+
+model TeacherSchedule {
+  id         String                @id @default(uuid())
+  teacherId  String                @map("teacher_id")
+  courseId   String                @map("course_id")
+  startTime  DateTime              @map("start_time")
+  endTime    DateTime              @map("end_time")
+  meetingUrl String                @map("meeting_url")
+  status     TeacherScheduleStatus @default(AVAILABLE)
+  createdAt  DateTime              @default(now()) @map("created_at")
+
+  teacher  User      @relation(fields: [teacherId], references: [userId])
+  course   Course    @relation(fields: [courseId], references: [id])
+  meetings Meeting[]
+
+  @@map("teacher_schedule")
+}
+
+model Meeting {
+  id                String   @id @default(uuid())
+  enrollmentId      String   @map("enrollment_id")
+  teacherScheduleId String   @map("teacher_schedule_id")
+  bookedAt          DateTime @default(now()) @map("booked_at")
+
+  enrollment      Enrollment      @relation(fields: [enrollmentId], references: [id])
+  teacherSchedule TeacherSchedule @relation(fields: [teacherScheduleId], references: [id])
+
+  @@map("meeting")
 }
 
 // -----------------------------------------------------------------------------

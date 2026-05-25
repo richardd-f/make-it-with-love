@@ -9,7 +9,8 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const isOnLoginOrRegister = nextUrl.pathname.startsWith('/login') || nextUrl.pathname.startsWith('/register');
       const isOnAdmin = nextUrl.pathname.startsWith('/admin');
-      
+      const isOnTeacher = nextUrl.pathname.startsWith('/teacher');
+
       if (isOnAdmin) {
         if (!isLoggedIn) return false;
         if (auth?.user?.role !== 'ADMIN') {
@@ -17,7 +18,15 @@ export const authConfig = {
         }
         return true;
       }
-      
+
+      if (isOnTeacher) {
+        if (!isLoggedIn) return Response.redirect(new URL('/login', nextUrl));
+        if (auth?.user?.role !== 'TEACHER') {
+          return Response.redirect(new URL('/', nextUrl));
+        }
+        return true;
+      }
+
       if (isOnLoginOrRegister) {
         if (isLoggedIn) return Response.redirect(new URL('/', nextUrl));
         return true;

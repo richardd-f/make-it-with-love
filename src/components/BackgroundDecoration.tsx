@@ -94,7 +94,7 @@ export function BackgroundDecoration() {
         <Image src="/images/assets/coral1_orange.webp" alt="Coral Decoration" width={200} height={200} />
       </div>
 
-      <div ref={setScrollRef(1)} className="absolute top-[60%] left-[20%] opacity-20 blur-[1px]">
+      <div ref={setScrollRef(1)} className="absolute top-[60%] left-[20%] opacity-20 blur-[1px] animate-[spin-slow]">
         <Image src="/images/assets/coral2_pink.webp" alt="Coral Decoration" width={250} height={250} />
       </div>
       

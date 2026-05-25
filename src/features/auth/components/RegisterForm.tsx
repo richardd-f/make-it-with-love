@@ -96,6 +96,12 @@ export function RegisterForm() {
           Login here
         </Link>
       </div>
+      <div className="text-center font-sans text-sm text-foreground/70">
+        Want to teach?{' '}
+        <Link href="/register/teacher" className="text-[var(--color-orange)] font-bold hover:underline">
+          Register as teacher
+        </Link>
+      </div>
     </form>
   );
 }
