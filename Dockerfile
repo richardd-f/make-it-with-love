@@ -48,6 +48,7 @@ ENV PNPM_HOME="/pnpm"
 # /tools/node_modules/.bin is prepended so prisma/tsx/dotenv binaries take
 # precedence and are found without pnpm ever touching /app/node_modules.
 ENV PATH="$PNPM_HOME:/tools/node_modules/.bin:/app/node_modules/.bin:$PATH"
+ENV NODE_PATH=/tools/node_modules
 
 RUN corepack enable && corepack prepare pnpm@10.15.0 --activate
 RUN apt-get update && apt-get install -y --no-install-recommends openssl ca-certificates \
