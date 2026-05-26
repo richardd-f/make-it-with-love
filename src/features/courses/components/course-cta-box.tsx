@@ -43,6 +43,13 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
         >
           Continue Learning!
         </button>
+      ) : course.isSubscribed ? (
+        <button
+          onClick={handleLearnNavigation}
+          className="w-full bg-[#f79d1c] hover:bg-[#e68f12] text-white font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest"
+        >
+          Start Learning!
+        </button>
       ) : course.starterKit.inStock ? (
         <button
           onClick={handleCheckoutNavigation}

@@ -11,7 +11,7 @@ export default async function LearnPage({ params }: { params: Promise<{ id: stri
     return notFound();
   }
 
-  if (!course.isOwned) {
+  if (!course.isOwned && !course.isSubscribed) {
     redirect(`/courses/${course.id}`);
   }
 

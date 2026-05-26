@@ -58,7 +58,8 @@ export interface ICourseDetail extends ICourse {
   starterKit: IStarterKit;
   contents: ICourseContent[];
   reviews: IReview[];
-  isOwned?: boolean;
+  isOwned?: boolean;       // true when the user has purchased / enrolled in this course
+  isSubscribed?: boolean;  // true when the user has an active platform subscription
 }
 
 export interface IEnrolledCourse extends ICourse {

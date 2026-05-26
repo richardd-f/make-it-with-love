@@ -42,14 +42,16 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
 
   if (!course) return null;
 
-  // Check if the current user is enrolled OR has an active subscription
-  let isOwned = false;
+  // Check enrollment and subscription independently
+  let isOwned = false;       // enrolled in this specific course
+  let isSubscribed = false;  // has an active platform subscription
   if (userId) {
     const [enrollment, activeSubscription] = await Promise.all([
       prisma.enrollment.findFirst({ where: { userId, courseId: id } }),
       prisma.userSubscription.findFirst({ where: { userId, status: "active" } }),
     ]);
-    isOwned = !!(enrollment || activeSubscription);
+    isOwned = !!enrollment;
+    isSubscribed = !!activeSubscription;
   }
 
   // Get category
@@ -66,11 +68,13 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
   };
 
   // Map videos to course contents
+  const hasAccess = isOwned || isSubscribed;
+
   const contents = course.videos.map((video, i) => ({
     id: video.id,
     title: video.title,
     duration: "10:00",
-    isLocked: !isOwned && i > 0, // First video is always a preview
+    isLocked: !hasAccess && i > 0, // First video is always a preview
     videoUrl: video.url,
   }));
 
@@ -89,6 +93,7 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
     videoPreviewUrl: course.videos[0]?.url || "",
     totalStudents: course._count.enrollments,
     isOwned,
+    isSubscribed,
     starterKit,
     contents,
     reviews: [],
