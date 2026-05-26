@@ -1,20 +1,19 @@
-export interface IScheduleMentor {
+export interface IScheduleTeacher {
   id: string;
   name: string;
   photo: string | null;
 }
 
 export interface ITimeSlot {
-  id: string; // mentorAvailability id
-  mentor: IScheduleMentor;
+  id: string;
+  teacher: IScheduleTeacher;
   startTime: Date;
   endTime: Date;
   status: "AVAILABLE" | "BOOKED";
-  meetingId: string | null; // null if available, set if booked
 }
 
 export interface ITimeSlotGroup {
-  timeLabel: string; // e.g. "10:00 AM - 11:00 AM"
+  timeLabel: string;
   startTime: Date;
   slots: ITimeSlot[];
 }

@@ -30,6 +30,7 @@ export interface IPaginatedResponse<T> {
 export interface ICourseContent {
   id: string;
   title: string;
+  description: string;
   duration: string;
   isLocked: boolean;
   videoUrl?: string;
@@ -58,8 +59,14 @@ export interface ICourseDetail extends ICourse {
   starterKit: IStarterKit;
   contents: ICourseContent[];
   reviews: IReview[];
-  isOwned?: boolean;       // true when the user has purchased / enrolled in this course
-  isSubscribed?: boolean;  // true when the user has an active platform subscription
+  isOwned?: boolean;
+  isSubscribed?: boolean;
+  canClaim?: boolean;
+  coursesClaimedLeft?: number;
+  meetingsAmountLeft?: number;
+  subscriptionMeetingsLeft?: number;
+  amountOfMeeting?: number;
+  isWishlisted?: boolean;
 }
 
 export interface IEnrolledCourse extends ICourse {

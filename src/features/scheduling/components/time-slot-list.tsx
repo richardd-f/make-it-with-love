@@ -15,7 +15,7 @@ export function TimeSlotList({ groups, selectedSlotId, onSelectSlot, isLoading }
     return (
       <div className="w-full flex flex-col items-center justify-center py-20">
         <div className="w-12 h-12 border-4 border-[#f6e5c4] border-t-[#f79d1c] rounded-full animate-spin"></div>
-        <p className="mt-4 text-gray-500 font-medium" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>Looking for available mentors...</p>
+        <p className="mt-4 text-gray-500 font-medium" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>Looking for available teachers...</p>
       </div>
     );
   }
@@ -25,7 +25,7 @@ export function TimeSlotList({ groups, selectedSlotId, onSelectSlot, isLoading }
       <div className="w-full bg-[#f6e5c4]/30 rounded-2xl p-12 text-center border-2 border-dashed border-[#f6e5c4]">
         <h3 className="font-family-papernotes text-3xl text-[#e4552c] mb-2">Oh no!</h3>
         <p className="text-gray-600" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
-          No mentors are available on this day. Try looking at another date!
+          No teachers are available on this day. Try looking at another date!
         </p>
       </div>
     );
@@ -62,11 +62,15 @@ export function TimeSlotList({ groups, selectedSlotId, onSelectSlot, isLoading }
                 >
                   <div className="flex items-center gap-4">
                     <div className="w-12 h-12 rounded-full bg-gradient-to-br from-[#ea7c9d] to-[#f79d1c] flex items-center justify-center text-white font-bold text-xl shadow-inner shrink-0">
-                      {slot.mentor.name.charAt(0)}
+                      {slot.teacher.photo ? (
+                        <img src={slot.teacher.photo} alt={slot.teacher.name} className="w-full h-full rounded-full object-cover" />
+                      ) : (
+                        slot.teacher.name.charAt(0)
+                      )}
                     </div>
                     <div>
                       <h4 className="font-bold text-gray-800 text-lg" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
-                        {slot.mentor.name}
+                        {slot.teacher.name}
                       </h4>
                       <p className="text-sm text-gray-500" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
                         Available
