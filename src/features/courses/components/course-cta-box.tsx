@@ -1,20 +1,33 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useTransition } from "react";
 import { ICourseDetail } from "../interfaces/course.types";
 import { useRouter } from "next/navigation";
 import { trackEvent } from "@/src/actions/track-event.action";
 import { BookZoomButton } from "./book-zoom-button";
 import { claimCourse } from "../actions/claim-course.action";
+import { addToCart } from "@/src/features/cart/actions/add-to-cart.action";
 import { toast } from "react-toastify";
 
 export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
-  const handleCheckoutNavigation = () => {
+  const handleAddToCart = () => {
     trackEvent("BUY_COURSE_CLICK", course.id);
-    alert(`Proceeding to checkout for ${course.title}`);
+    startTransition(async () => {
+      const result = await addToCart(course.id);
+      if (!result.success) {
+        toast.error(result.message);
+        return;
+      }
+      if (result.alreadyInCart) {
+        toast.info("Already in your cart!");
+        router.push("/cart");
+        return;
+      }
+      toast.success("Added to cart!");
+    });
   };
 
   const handleLearnNavigation = () => {
@@ -104,10 +117,11 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
         </div>
       ) : course.starterKit.inStock ? (
         <button
-          onClick={handleCheckoutNavigation}
-          className="w-full bg-white hover:bg-gray-100 text-[#32a569] font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest"
+          onClick={handleAddToCart}
+          disabled={isPending}
+          className="w-full bg-white hover:bg-gray-100 text-[#32a569] font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest disabled:opacity-60 disabled:hover:scale-100"
         >
-          Buy / Add to Cart
+          {isPending ? "Adding…" : "Add to Cart"}
         </button>
       ) : (
         <div className="flex flex-col gap-4">

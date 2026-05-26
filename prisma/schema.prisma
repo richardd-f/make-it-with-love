@@ -1,5 +1,6 @@
 generator client {
-  provider = "prisma-client-js"
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
 }
 
 datasource db {
@@ -84,6 +85,7 @@ model Transaction {
   userId          String   @map("user_id")
   paymentStatus   String   @map("payment_status")
   transactionDate DateTime @map("transaction_date")
+  type            String   @default("subscription")
 
   user               User                @relation(fields: [userId], references: [userId])
   transactionDetails TransactionDetail[]
@@ -92,11 +94,12 @@ model Transaction {
 }
 
 model TransactionDetail {
-  transactionDetailsId String @id @default(uuid()) @map("transaction_details_id")
-  transactionId        String @map("transaction_id")
+  transactionDetailsId String  @id @default(uuid()) @map("transaction_details_id")
+  transactionId        String  @map("transaction_id")
+  courseId             String? @map("course_id")
   item                 String
   quantity             Int
-  totalPrice           Float  @map("total_price")
+  totalPrice           Float   @map("total_price")
 
   transaction Transaction @relation(fields: [transactionId], references: [transactionId])
 
@@ -210,6 +213,7 @@ model Cart {
   user   User   @relation(fields: [userId], references: [userId])
   course Course @relation(fields: [courseId], references: [id])
 
+  @@unique([userId, courseId])
   @@map("carts")
 }
 

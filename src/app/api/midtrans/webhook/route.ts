@@ -46,27 +46,63 @@ export async function POST(request: NextRequest) {
     });
 
     const isFraud = fraud_status === "fraud";
+    const isSuccess =
+      (SUCCESS_STATUSES as readonly string[]).includes(transaction_status) && !isFraud;
+    const isFailure =
+      (FAILURE_STATUSES as readonly string[]).includes(transaction_status) || isFraud;
 
-    // 4. Activate subscription on success
-    if (
-      (SUCCESS_STATUSES as readonly string[]).includes(transaction_status) &&
-      !isFraud
-    ) {
-      await prisma.userSubscription.updateMany({
-        where: { userId: transaction.userId, status: "pending" },
-        data: { status: "active", meetingAdditionsLeft: 2 },
-      });
-    }
+    if (transaction.type === "course") {
+      // 4a. Course purchase: enroll user in each purchased course
+      if (isSuccess) {
+        const details = await prisma.transactionDetail.findMany({
+          where: { transactionId: order_id },
+        });
 
-    // 5. Cancel subscription on failure / fraud
-    if (
-      (FAILURE_STATUSES as readonly string[]).includes(transaction_status) ||
-      isFraud
-    ) {
-      await prisma.userSubscription.updateMany({
-        where: { userId: transaction.userId, status: "pending" },
-        data: { status: "cancelled" },
-      });
+        const courseIds = details
+          .map((d: { courseId: string | null }) => d.courseId)
+          .filter((id: string | null): id is string => id !== null);
+
+        const courses = await prisma.course.findMany({
+          where: { id: { in: courseIds } },
+          select: { id: true, amountOfMeeting: true },
+        });
+
+        const courseMap = new Map(courses.map((c: { id: string; amountOfMeeting: number }) => [c.id, c.amountOfMeeting]));
+
+        for (const courseId of courseIds) {
+          const existing = await prisma.enrollment.findFirst({
+            where: { userId: transaction.userId, courseId },
+          });
+          if (!existing) {
+            await prisma.enrollment.create({
+              data: {
+                userId: transaction.userId,
+                courseId,
+                meetingsAmountLeft: courseMap.get(courseId) ?? 0,
+              },
+            });
+          }
+        }
+
+        // Clear purchased courses from cart
+        await prisma.cart.deleteMany({
+          where: { userId: transaction.userId, courseId: { in: courseIds } },
+        });
+      }
+    } else {
+      // 4b. Subscription purchase: activate or cancel
+      if (isSuccess) {
+        await prisma.userSubscription.updateMany({
+          where: { userId: transaction.userId, status: "pending" },
+          data: { status: "active", meetingAdditionsLeft: 2 },
+        });
+      }
+      if (isFailure) {
+        await prisma.userSubscription.updateMany({
+          where: { userId: transaction.userId, status: "pending" },
+          data: { status: "cancelled" },
+        });
+      }
     }
 
     return NextResponse.json({ message: "OK" }, { status: 200 });
