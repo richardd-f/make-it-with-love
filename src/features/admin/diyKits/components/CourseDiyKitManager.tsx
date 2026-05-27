@@ -2,7 +2,7 @@
 
 import { useTransition } from 'react';
 import { toggleDiyKitForCourse } from '../actions/diyKitActions';
-import { DiyKit } from '@prisma/client';
+import { DiyKitModel as DiyKit } from '@/src/generated/prisma/models';
 
 type CourseDiyKitManagerProps = {
   courseId: string;

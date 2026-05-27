@@ -2,7 +2,7 @@
 
 import { useActionState, useEffect } from 'react';
 import { createDiyKit, updateDiyKit, deleteDiyKit } from '../actions/diyKitActions';
-import { DiyKit } from '@prisma/client';
+import { DiyKitModel as DiyKit } from '@/src/generated/prisma/models';
 
 export function DiyKitForm({ kit }: { kit?: DiyKit }) {
   const isUpdating = !!kit;
