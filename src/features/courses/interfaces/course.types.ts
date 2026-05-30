@@ -4,11 +4,12 @@ export interface ICourse {
   author: string;
   rating: number;
   totalReviews: number;
+  totalStudents?: number;
   price: number;
   category: string;
   ageRange: string;
   thumbnailUrl: string;
-  tags?: string[]; // e.g. "Bestseller", "New"
+  tags?: string[];
 }
 
 export interface ICourseFilters {

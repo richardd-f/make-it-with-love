@@ -25,9 +25,9 @@ export default async function AdminDiyKitsPage() {
       <div className="w-full md:w-2/3 flex flex-col gap-6 z-10">
         <h1 className="text-5xl font-family-papernotes text-[var(--color-orange)] drop-shadow-sm mb-4">Manage DIY Kits</h1>
         
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="flex flex-wrap gap-4">
           {diyKits.map(kit => (
-            <div key={kit.id} className="group flex flex-col bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-white/50 shadow hover:shadow-lg transition-all relative">
+            <div key={kit.id} className="group flex flex-col bg-white/60 backdrop-blur-sm p-5 rounded-2xl border border-white/50 shadow hover:shadow-lg transition-all relative w-full sm:w-[calc(50%-8px)]">
               <h3 className="text-xl font-bold font-sans text-foreground">{kit.name}</h3>
               <p className="text-sm text-foreground/70 line-clamp-2 mt-1 flex-1">{kit.description || "No description"}</p>
               <div className="mt-4 pt-3 border-t border-gray-200 flex justify-between items-center text-sm font-semibold">
@@ -37,7 +37,7 @@ export default async function AdminDiyKitsPage() {
             </div>
           ))}
           {diyKits.length === 0 && (
-            <p className="col-span-full text-center p-8 text-foreground/60 italic bg-white/40 rounded-3xl border border-dashed border-gray-300">No DIY Kits found. Add some using the form!</p>
+            <p className="w-full text-center p-8 text-foreground/60 italic bg-white/40 rounded-3xl border border-dashed border-gray-300">No DIY Kits found. Add some using the form!</p>
           )}
         </div>
       </div>

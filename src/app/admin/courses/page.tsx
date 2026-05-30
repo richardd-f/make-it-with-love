@@ -19,9 +19,9 @@ export default async function AdminCoursesPage() {
         <CreateCourseModal />
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 z-10">
+      <div className="flex flex-wrap gap-6 z-10">
         {courses.map(course => (
-          <Link key={course.id} href={`/admin/courses/${course.id}`} className="group flex flex-col bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow hover:shadow-xl hover:scale-[1.02] transition-all">
+          <Link key={course.id} href={`/admin/courses/${course.id}`} className="group flex flex-col bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow hover:shadow-xl hover:scale-[1.02] transition-all w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
             <h3 className="text-2xl font-bold font-sans text-foreground group-hover:text-[var(--color-pink)] transition-colors">{course.name}</h3>
             <p className="text-sm text-foreground/70 line-clamp-2 mt-2 flex-1">{course.description || "No description provided."}</p>
             <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center text-sm font-semibold">
@@ -31,7 +31,7 @@ export default async function AdminCoursesPage() {
           </Link>
         ))}
         {courses.length === 0 && (
-          <p className="col-span-full text-center p-12 text-lg text-foreground/60 italic bg-white/40 rounded-3xl">No courses found. Create one to get started!</p>
+          <p className="w-full text-center p-12 text-lg text-foreground/60 italic bg-white/40 rounded-3xl">No courses found. Create one to get started!</p>
         )}
       </div>
 

@@ -84,6 +84,9 @@ export async function getCourses(
           include: {
             category: true
           }
+        },
+        _count: {
+          select: { enrollments: true }
         }
       }
     }),
@@ -103,8 +106,9 @@ export async function getCourses(
       id: course.id,
       title: course.name,
       author: "MIWL Instructor", // Default placeholder
-      rating: 5.0, // Default placeholder
-      totalReviews: 0, // Default placeholder
+      rating: 5.0,
+      totalReviews: 0,
+      totalStudents: course._count.enrollments,
       price: course.price,
       category: categoryName,
       ageRange: `${course.minAge}+`,

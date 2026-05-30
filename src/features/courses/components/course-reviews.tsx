@@ -19,9 +19,9 @@ export const CourseReviews = ({ reviews, isOwned }: { reviews: IReview[], isOwne
         Happy Creators Reviews
       </h3>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12">
+      <div className="flex flex-wrap gap-8 mb-12">
         {reviews.map(review => (
-          <div key={review.id} className="bg-white p-8 rounded-3xl shadow-md border-2 border-white hover:border-[#f79d1c] relative flex flex-col justify-between cursor-pointer active:scale-[0.98] active:-rotate-1 transition-all duration-200">
+          <div key={review.id} className="bg-white p-8 rounded-3xl shadow-md border-2 border-white hover:border-[#f79d1c] relative flex flex-col justify-between cursor-pointer active:scale-[0.98] active:-rotate-1 transition-all duration-200 w-full md:w-[calc(50%-16px)]">
             {/* User Avatar & Name */}
             <div className="flex items-center gap-4 mb-4">
               <div className="w-12 h-12 bg-gradient-to-br from-[#ea7c9d] to-[#e4552c] rounded-full shadow-sm text-center flex items-center justify-center font-family-papernotes text-2xl text-white">

@@ -31,12 +31,12 @@ export default async function TeacherCoursesPage() {
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        <div className="flex flex-wrap gap-6">
           {courses.map((course) => (
             <Link
               key={course.id}
               href={`/teacher/courses/${course.id}/schedule`}
-              className="flex flex-col bg-white rounded-[2rem] p-6 shadow-lg border-2 border-gray-100 hover:border-[#f79d1c] hover:shadow-xl transition-all group"
+              className="flex flex-col bg-white rounded-[2rem] p-6 shadow-lg border-2 border-gray-100 hover:border-[#f79d1c] hover:shadow-xl transition-all group w-full md:w-[calc(50%-12px)]"
             >
               <div className="flex items-center gap-4 mb-4">
                 <img

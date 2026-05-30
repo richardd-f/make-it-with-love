@@ -27,11 +27,11 @@ export function CourseDiyKitManager({ courseId, allKits, assignedKitIds }: Cours
       {allKits.length === 0 ? (
         <p className="text-foreground/60 italic p-4">No DIY Kits available. Create some in the DIY Kits management page first.</p>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        <div className="flex flex-wrap gap-4">
           {allKits.map(kit => {
             const isAssigned = assignedKitIds.includes(kit.id);
             return (
-              <div key={kit.id} className={`flex flex-col p-4 rounded-2xl border-2 transition-all ${
+              <div key={kit.id} className={`flex flex-col p-4 rounded-2xl border-2 transition-all w-full sm:w-[calc(50%-8px)] md:w-[calc(33.333%-11px)] ${
                 isAssigned 
                 ? 'bg-[var(--color-orange)]/10 border-[var(--color-orange)]' 
                 : 'bg-white/60 border-transparent hover:border-[var(--color-orange)]/50'
