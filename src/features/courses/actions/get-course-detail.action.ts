@@ -50,15 +50,23 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
   let subscriptionMeetingsLeft: number | undefined;
   let isWishlisted = false;
 
+  let watchedVideoIds = new Set<string>();
+
   if (userId) {
-    const [enrollment, activeSubscription, wishlist] = await Promise.all([
+    const [enrollment, activeSubscription, wishlist, watchedVideos] = await Promise.all([
       prisma.enrollment.findFirst({ where: { userId, courseId: id } }),
       prisma.userSubscription.findFirst({
         where: { userId, status: "active" },
         include: { subscription: true },
       }),
       prisma.wishlist.findFirst({ where: { userId, courseId: id } }),
+      prisma.userVideo.findMany({
+        where: { userId, videoId: { in: course.videos.map((v) => v.id) }, isDone: true },
+        select: { videoId: true },
+      }),
     ]);
+
+    watchedVideoIds = new Set(watchedVideos.map((uv) => uv.videoId));
 
     isOwned = !!enrollment;
     isSubscribed = !!activeSubscription;
@@ -97,6 +105,7 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
     duration: "10:00",
     isLocked: !hasAccess && i > 0,
     videoUrl: video.url,
+    isDone: watchedVideoIds.has(video.id),
   }));
 
   return {

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { getCourseDetail } from "@/src/features/courses/actions/get-course-detail.action";
 import { BreadcrumbList } from "@/src/components/ui/breadcrumbs";
+import { VideoPlayer } from "@/src/features/courses/components/video-player";
 
 export default async function VideoPage({
   params,
@@ -50,14 +51,11 @@ export default async function VideoPage({
           </h1>
           
           <div className="w-full aspect-video rounded-2xl overflow-hidden bg-black/5 relative shadow-inner">
-            <video
-              className="w-full h-full object-cover"
-              controls
-              poster={course.thumbnailUrl}
-            >
-              <source src={currentContent.videoUrl || course.videoPreviewUrl} type="video/mp4" />
-              Your browser does not support the video tag.
-            </video>
+            <VideoPlayer
+              videoUrl={currentContent.videoUrl || course.videoPreviewUrl}
+              posterUrl={course.thumbnailUrl}
+              videoId={currentContent.id}
+            />
           </div>
         </div>
 

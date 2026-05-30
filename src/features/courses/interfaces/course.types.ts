@@ -34,6 +34,7 @@ export interface ICourseContent {
   duration: string;
   isLocked: boolean;
   videoUrl?: string;
+  isDone?: boolean;
 }
 
 export interface IStarterKit {

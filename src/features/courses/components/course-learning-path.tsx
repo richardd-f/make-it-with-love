@@ -60,9 +60,8 @@ export function CourseLearningPath({ course }: CourseLearningPathProps) {
   return (
     <div className="w-full max-w-4xl mx-auto flex flex-col pb-32 mt-4 px-2 sm:px-4">
       {course.contents.map((content, i) => {
-        // Mock watched status: first two are watched
-        const isWatched = i < 2;
-        const isNextWatched = i + 1 < 2; // For the connecting line
+        const isWatched = content.isDone ?? false;
+        const isNextWatched = course.contents[i + 1]?.isDone ?? false;
         const isEven = i % 2 === 0;
         const isLast = i === course.contents.length - 1;
 
