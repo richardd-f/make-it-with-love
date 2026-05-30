@@ -17,8 +17,6 @@ type NavItem = {
 
 const NAV_ITEMS: NavItem[] = [
   { label: 'My Courses', mode: 'single', href: '/myCourse', userOnly: true },
-  { label: 'Look for courses', mode: 'single', href: '/courses' },
-  { label: 'Liked Courses', mode: 'single', href: '/liked-courses', userOnly: true },
   { label: 'My Meetings', mode: 'single', href: '/my-meetings', userOnly: true },
   { label: 'Subscribe', mode: 'single', href: '/subscription', hideWhenSubscribed: true, userOnly: true },
   { label: 'My Courses', mode: 'single', href: '/teacher/courses', teacherOnly: true },
@@ -114,6 +112,24 @@ export function NavBarClient({ session, isSubscribed, logoutAction }: NavBarClie
             )}
           </div>
         ))}
+
+        {/* Liked Courses + Cart icons (regular users only) */}
+        {session && !isAdmin && !isTeacher && (
+          <>
+            <Link href="/liked-courses" title="Liked Courses" className="flex items-center text-gray-700 hover:text-[#ea7c9d] transition-colors">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+              </svg>
+            </Link>
+            <Link href="/cart" title="Cart" className="flex items-center text-gray-700 hover:text-[#32a569] transition-colors">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <circle cx="9" cy="21" r="1"></circle>
+                <circle cx="20" cy="21" r="1"></circle>
+                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+              </svg>
+            </Link>
+          </>
+        )}
 
         {/* Desktop Profile / Login */}
         {session ? (
@@ -217,6 +233,38 @@ export function NavBarClient({ session, isSubscribed, logoutAction }: NavBarClie
                 )}
               </div>
             ))}
+
+            {/* Liked Courses + Cart (regular users only) */}
+            {session && !isAdmin && !isTeacher && (
+              <>
+                <div className="flex flex-col border-b border-gray-100 pb-4">
+                  <Link
+                    href="/liked-courses"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 text-2xl font-bold text-gray-800 hover:text-[#ea7c9d] transition-colors font-family-papernotes tracking-wide"
+                  >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                    </svg>
+                    Liked Courses
+                  </Link>
+                </div>
+                <div className="flex flex-col border-b border-gray-100 pb-4">
+                  <Link
+                    href="/cart"
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="flex items-center gap-3 text-2xl font-bold text-gray-800 hover:text-[#32a569] transition-colors font-family-papernotes tracking-wide"
+                  >
+                    <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="9" cy="21" r="1"></circle>
+                      <circle cx="20" cy="21" r="1"></circle>
+                      <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                    </svg>
+                    Cart
+                  </Link>
+                </div>
+              </>
+            )}
 
             {/* Mobile Profile / Login */}
             <div className="mt-4 pt-4 border-t-2 border-gray-100">

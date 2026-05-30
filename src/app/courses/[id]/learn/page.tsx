@@ -2,6 +2,7 @@ import { getCourseDetail } from "@/src/features/courses/actions/get-course-detai
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { CourseLearningPath } from "../../../../features/courses/components/course-learning-path";
+import { BookZoomButton } from "@/src/features/courses/components/book-zoom-button";
 
 export default async function LearnPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -38,7 +39,7 @@ export default async function LearnPage({ params }: { params: Promise<{ id: stri
             </svg>
             Schedule a Mentor Meeting!
           </Link>
-          <Link 
+          <Link
             href={`/courses/${course.id}/gallery`}
             className="inline-flex items-center gap-2 bg-[#ea7c9d] hover:bg-[#c65d7c] text-white font-bold py-4 px-8 rounded-full shadow-lg hover:shadow-xl transition-all hover:-translate-y-1"
             style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}
@@ -50,6 +51,7 @@ export default async function LearnPage({ params }: { params: Promise<{ id: stri
             </svg>
             Student Gallery
           </Link>
+          <BookZoomButton courseId={course.id} courseTitle={course.title} />
         </div>
       </div>
 

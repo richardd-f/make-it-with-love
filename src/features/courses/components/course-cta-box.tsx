@@ -4,7 +4,6 @@ import React, { useTransition } from "react";
 import { ICourseDetail } from "../interfaces/course.types";
 import { useRouter } from "next/navigation";
 import { trackEvent } from "@/src/actions/track-event.action";
-import { BookZoomButton } from "./book-zoom-button";
 import { claimCourse } from "../actions/claim-course.action";
 import { addToCart } from "@/src/features/cart/actions/add-to-cart.action";
 import { toast } from "react-toastify";
@@ -135,10 +134,6 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
             Join Waitlist
           </button>
         </div>
-      )}
-
-      {!course.isOwned && (
-        <BookZoomButton courseId={course.id} courseTitle={course.title} />
       )}
 
       <div className="text-center mt-2 opacity-80 text-sm flex items-center justify-center gap-2">
