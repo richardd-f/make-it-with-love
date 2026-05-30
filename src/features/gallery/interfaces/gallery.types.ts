@@ -2,7 +2,8 @@ export interface IGalleryPost {
   id: string;
   title: string;
   description: string;
-  imageUrl: string;
+  mediaUrl: string;
+  mediaType: 'image' | 'video';
   authorName: string;
   authorProfilePic: string;
   courseId: string;

@@ -40,16 +40,28 @@ export function CourseGalleryPreview({ posts, courseId }: CourseGalleryPreviewPr
             onClick={() => setSelectedPost(post)}
             className="snap-start shrink-0 w-[280px] bg-white rounded-3xl p-3 shadow-md hover:shadow-xl transition-all duration-300 border-2 border-transparent hover:border-[#f79d1c] cursor-pointer group flex flex-col"
           >
-            {/* Image Container */}
+            {/* Media Container */}
             <div className="relative w-full h-48 rounded-2xl overflow-hidden bg-gradient-to-br from-[#f6e5c4]/30 to-[#f79d1c]/10 flex items-center justify-center mb-4">
-              <Image 
-                src={post.imageUrl} 
-                alt={post.title} 
-                fill
-                className="object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500 p-2" 
-              />
-              {/* Overlay gradient on hover */}
-              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10" />
+              {post.mediaType === "video" ? (
+                <>
+                  <video src={post.mediaUrl} muted playsInline className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+                  <div className="absolute inset-0 flex items-center justify-center bg-black/20 z-10">
+                    <div className="w-10 h-10 bg-white/90 rounded-full flex items-center justify-center shadow">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="#ea7c9d" className="ml-0.5"><polygon points="5 3 19 12 5 21 5 3" /></svg>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Image
+                    src={post.mediaUrl}
+                    alt={post.title}
+                    fill
+                    className="object-contain mix-blend-multiply opacity-90 group-hover:scale-105 transition-transform duration-500 p-2"
+                  />
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors duration-300 z-10" />
+                </>
+              )}
             </div>
 
             {/* Footer info */}
@@ -60,13 +72,12 @@ export function CourseGalleryPreview({ posts, courseId }: CourseGalleryPreviewPr
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full overflow-hidden bg-[#ea7c9d]/20 relative shrink-0">
-                    <Image 
-                      src={post.authorProfilePic} 
-                      alt={post.authorName}
-                      fill
-                      className="object-cover mix-blend-multiply"
-                    />
+                  <div className="w-6 h-6 rounded-full overflow-hidden bg-[#ea7c9d]/20 relative shrink-0 flex items-center justify-center">
+                    {post.authorProfilePic ? (
+                      <Image src={post.authorProfilePic} alt={post.authorName} fill className="object-cover" />
+                    ) : (
+                      <span className="text-white text-xs font-bold">{post.authorName.charAt(0)}</span>
+                    )}
                   </div>
                   <span className="text-sm text-gray-500 font-medium truncate" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
                     {post.authorName}

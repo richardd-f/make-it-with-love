@@ -250,11 +250,13 @@ model Enrollment {
 }
 
 model ImageGallery {
-  id           String  @id @default(uuid())
+  id           String   @id @default(uuid())
   title        String?
   caption      String?
   url          String
-  enrollmentId String  @map("enrollment_id")
+  mediaType    String   @default("image") @map("media_type")
+  createdAt    DateTime @default(now()) @map("created_at")
+  enrollmentId String   @map("enrollment_id")
 
   enrollment Enrollment @relation(fields: [enrollmentId], references: [id])
 

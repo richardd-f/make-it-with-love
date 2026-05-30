@@ -3,6 +3,7 @@ import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { CourseLearningPath } from "../../../../features/courses/components/course-learning-path";
 import { BookZoomButton } from "@/src/features/courses/components/book-zoom-button";
+import { ShowOffCraftInlineButton } from "@/src/features/gallery/components/show-off-craft-inline-button";
 
 export default async function LearnPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
@@ -52,6 +53,7 @@ export default async function LearnPage({ params }: { params: Promise<{ id: stri
             Student Gallery
           </Link>
           <BookZoomButton courseId={course.id} courseTitle={course.title} />
+          <ShowOffCraftInlineButton courseId={course.id} />
         </div>
       </div>
 
