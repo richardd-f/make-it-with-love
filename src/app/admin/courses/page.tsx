@@ -2,6 +2,7 @@ import { prisma } from "@/src/lib/prisma";
 import Link from "next/link";
 import Image from "next/image";
 import { CreateCourseModal } from "@/src/features/admin/courses/components/CreateCourseModal";
+import { DeleteCourseButton } from "@/src/features/admin/courses/components/DeleteCourseButton";
 
 export const metadata = {
   title: "Admin Courses | Make It With Love",
@@ -21,7 +22,8 @@ export default async function AdminCoursesPage() {
 
       <div className="flex flex-wrap gap-6 z-10">
         {courses.map(course => (
-          <Link key={course.id} href={`/admin/courses/${course.id}`} className="group flex flex-col bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow hover:shadow-xl hover:scale-[1.02] transition-all w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+          <Link key={course.id} href={`/admin/courses/${course.id}`} className="relative group flex flex-col bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow hover:shadow-xl hover:scale-[1.02] transition-all w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
+            <DeleteCourseButton courseId={course.id} courseName={course.name} />
             <h3 className="text-2xl font-bold font-sans text-foreground group-hover:text-[var(--color-pink)] transition-colors">{course.name}</h3>
             <p className="text-sm text-foreground/70 line-clamp-2 mt-2 flex-1">{course.description || "No description provided."}</p>
             <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center text-sm font-semibold">

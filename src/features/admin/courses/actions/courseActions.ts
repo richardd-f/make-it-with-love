@@ -73,6 +73,17 @@ export async function updateCourse(courseId: string, prevState: any, formData: F
   return { success: 'Course updated successfully' };
 }
 
+export async function deleteCourse(courseId: string) {
+  try {
+    await prisma.course.delete({ where: { id: courseId } });
+  } catch (error) {
+    console.error('Error deleting course', error);
+    return { error: 'Failed to delete course' };
+  }
+  revalidatePath('/admin/courses');
+  return { success: 'Course deleted successfully' };
+}
+
 export async function toggleCourseCategory(courseId: string, categoryId: string, isAssigned: boolean) {
   try {
     if (isAssigned) {
