@@ -15,7 +15,7 @@ export function CourseForm({ course }: { course?: Course }) {
   const [imgUrl, setImgUrl] = useState<string | null>(course?.imgUrl || null);
 
   return (
-    <form action={formAction} className="flex flex-col gap-5 w-full max-w-2xl bg-white/40 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-white/50">
+    <form action={formAction} className="flex flex-col gap-5 w-full max-w-2xl mx-auto bg-white/40 backdrop-blur-md p-8 rounded-3xl shadow-xl border border-white/50">
       <h2 className="text-3xl font-family-papernotes text-[var(--color-pink)]">{isUpdating ? 'Update Course' : 'Create New Course'}</h2>
       
       <input type="hidden" name="imgUrl" value={imgUrl || ''} />
@@ -72,7 +72,7 @@ export function CourseForm({ course }: { course?: Course }) {
           />
         </div>
         <div className="flex flex-col gap-1">
-          <label className="font-sans font-semibold text-foreground/80 ml-2" htmlFor="price">Price ($)</label>
+          <label className="font-sans font-semibold text-foreground/80 ml-2" htmlFor="price">Price (Rp)</label>
           <input 
             className="w-full px-5 py-3 rounded-2xl bg-white/70 border-2 border-[var(--color-pink)]/30 focus:border-[var(--color-pink)] outline-none" 
             id="price" name="price" type="number" step="0.01" required min="0" defaultValue={course?.price}

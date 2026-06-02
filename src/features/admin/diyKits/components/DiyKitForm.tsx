@@ -33,7 +33,7 @@ export function DiyKitForm({ kit }: { kit?: DiyKit }) {
 
         <div className="flex gap-3">
           <div className="flex flex-col gap-1 flex-1">
-            <label className="font-sans font-semibold text-foreground/80 text-sm ml-2" htmlFor={`price-${kit?.id || 'new'}`}>Price ($)</label>
+            <label className="font-sans font-semibold text-foreground/80 text-sm ml-2" htmlFor={`price-${kit?.id || 'new'}`}>Price (Rp)</label>
             <input 
               className="w-full px-4 py-2 rounded-xl bg-white/80 border-2 border-[var(--color-orange)]/30 focus:border-[var(--color-orange)] outline-none" 
               id={`price-${kit?.id || 'new'}`} name="price" type="number" step="0.01" required min="0" defaultValue={kit?.price}

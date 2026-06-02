@@ -27,7 +27,7 @@ export default async function AdminCoursesPage() {
             <h3 className="text-2xl font-bold font-sans text-foreground group-hover:text-[var(--color-pink)] transition-colors">{course.name}</h3>
             <p className="text-sm text-foreground/70 line-clamp-2 mt-2 flex-1">{course.description || "No description provided."}</p>
             <div className="mt-4 pt-4 border-t border-gray-200 flex justify-between items-center text-sm font-semibold">
-              <span className="text-[var(--color-green)]">${course.price.toFixed(2)}</span>
+              <span className="text-[var(--color-green)]">Rp {course.price.toLocaleString("id-ID")}</span>
               <span className="text-foreground/60">{course.amountOfMeeting} Meetings</span>
             </div>
           </Link>

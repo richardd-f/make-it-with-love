@@ -37,7 +37,7 @@ export function CourseDiyKitManager({ courseId, allKits, assignedKitIds }: Cours
                 : 'bg-white/60 border-transparent hover:border-[var(--color-orange)]/50'
               }`}>
                 <h4 className="font-bold text-lg">{kit.name}</h4>
-                <p className="text-sm text-foreground/70 mb-2">${kit.price.toFixed(2)} - Stock: {kit.stock}</p>
+                <p className="text-sm text-foreground/70 mb-2">Rp {kit.price.toLocaleString("id-ID")} - Stock: {kit.stock}</p>
                 <button
                   onClick={() => handleToggle(kit.id, isAssigned)}
                   disabled={isPending}
