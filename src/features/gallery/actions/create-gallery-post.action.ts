@@ -9,7 +9,8 @@ export async function createGalleryPost(
   title: string,
   caption: string,
   mediaUrl: string,
-  mediaType: "image" | "video"
+  mediaType: "image" | "video",
+  rating?: number
 ): Promise<{ success: boolean; error?: string }> {
   const session = await auth();
   if (!session?.user?.id) {
@@ -24,12 +25,15 @@ export async function createGalleryPost(
     return { success: false, error: "Not enrolled in this course" };
   }
 
+  const validRating = rating && rating >= 1 && rating <= 5 ? rating : null;
+
   await prisma.imageGallery.create({
     data: {
       title,
       caption: caption || null,
       url: mediaUrl,
       mediaType,
+      rating: validRating,
       enrollmentId: enrollment.id
     }
   });

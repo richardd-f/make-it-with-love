@@ -19,6 +19,8 @@ export function ShowOffCraftModal({ courseId, isOpen, onClose }: ShowOffCraftMod
   const [mediaType, setMediaType] = useState<"image" | "video">("image");
   const [title, setTitle] = useState("");
   const [caption, setCaption] = useState("");
+  const [rating, setRating] = useState<number>(0);
+  const [hoverRating, setHoverRating] = useState<number>(0);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +41,7 @@ export function ShowOffCraftModal({ courseId, isOpen, onClose }: ShowOffCraftMod
     setIsSubmitting(true);
     setError(null);
 
-    const result = await createGalleryPost(courseId, title.trim(), caption.trim(), mediaUrl, mediaType);
+    const result = await createGalleryPost(courseId, title.trim(), caption.trim(), mediaUrl, mediaType, rating > 0 ? rating : undefined);
 
     if (!result.success) {
       setError(result.error ?? "Something went wrong.");
@@ -55,6 +57,8 @@ export function ShowOffCraftModal({ courseId, isOpen, onClose }: ShowOffCraftMod
     setMediaUrl(null);
     setTitle("");
     setCaption("");
+    setRating(0);
+    setHoverRating(0);
     setError(null);
     setIsSubmitting(false);
     onClose();
@@ -89,9 +93,9 @@ export function ShowOffCraftModal({ courseId, isOpen, onClose }: ShowOffCraftMod
         </button>
 
         {/* Header */}
-        <div className="bg-gradient-to-r from-[#ea7c9d] to-[#f79d1c] px-8 pt-8 pb-6">
-          <h2 className="font-family-papernotes text-4xl text-white drop-shadow-sm">Show Off Your Craft!</h2>
-          <p className="text-white/80 text-sm mt-1" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
+        <div className="px-8 pt-8 pb-6 border-b border-gray-100">
+          <h2 className="font-family-papernotes text-4xl text-gray-800">Show Off Your Craft</h2>
+          <p className="text-gray-500 text-sm mt-1" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
             Share your amazing creation with the world
           </p>
         </div>
@@ -187,6 +191,38 @@ export function ShowOffCraftModal({ courseId, isOpen, onClose }: ShowOffCraftMod
             />
           </div>
 
+          {/* Rating */}
+          <div className="flex flex-col gap-2">
+            <label className="text-sm font-semibold text-gray-600 uppercase tracking-wider" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
+              Rate This Course <span className="text-gray-400 normal-case font-normal text-xs">(optional)</span>
+            </label>
+            <div className="flex gap-1">
+              {[1, 2, 3, 4, 5].map((star) => (
+                <button
+                  key={star}
+                  type="button"
+                  onClick={() => setRating(star === rating ? 0 : star)}
+                  onMouseEnter={() => setHoverRating(star)}
+                  onMouseLeave={() => setHoverRating(0)}
+                  className="p-1 transition-transform hover:scale-110"
+                >
+                  <svg
+                    width="28"
+                    height="28"
+                    viewBox="0 0 24 24"
+                    fill={(hoverRating || rating) >= star ? "#f79d1c" : "none"}
+                    stroke="#f79d1c"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" />
+                  </svg>
+                </button>
+              ))}
+            </div>
+          </div>
+
           {error && (
             <p className="text-sm text-[#e4552c] font-medium" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
               {error}
@@ -209,7 +245,7 @@ export function ShowOffCraftModal({ courseId, isOpen, onClose }: ShowOffCraftMod
                 Posting...
               </span>
             ) : (
-              "Share My Craft! 🎨"
+              "Share My Craft"
             )}
           </button>
         </form>

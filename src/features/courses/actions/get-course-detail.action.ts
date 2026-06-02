@@ -52,6 +52,20 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
 
   let watchedVideoIds = new Set<string>();
 
+  const ratingData = await prisma.imageGallery.aggregate({
+    where: {
+      enrollment: { courseId: id },
+      rating: { not: null },
+    },
+    _avg: { rating: true },
+    _count: { rating: true },
+  });
+
+  const avgRating = ratingData._avg.rating
+    ? Math.round(ratingData._avg.rating * 10) / 10
+    : 0;
+  const totalReviewsCount = ratingData._count.rating;
+
   if (userId) {
     const [enrollment, activeSubscription, wishlist, watchedVideos] = await Promise.all([
       prisma.enrollment.findFirst({ where: { userId, courseId: id } }),
@@ -112,12 +126,12 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
     id: course.id,
     title: course.name,
     author: "MakeitWithLove",
-    rating: 0,
-    totalReviews: 0,
+    rating: avgRating,
+    totalReviews: totalReviewsCount,
     price: course.price,
     category,
     ageRange: `${course.minAge}+`,
-    thumbnailUrl: getThumbnail(course.id),
+    thumbnailUrl: course.imgUrl || getThumbnail(course.id),
     tags: [],
     description: course.description || "",
     videoPreviewUrl: course.videos[0]?.url || "",

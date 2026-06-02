@@ -63,18 +63,8 @@ export default async function SubscriptionPage() {
             </div>
           )}
 
-          {status === "pending" && (
-            <div className="w-full flex flex-col gap-4">
-              <div className="w-full rounded-2xl py-4 px-6 bg-amber-50 border-2 border-amber-300 text-amber-700 text-center" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
-                <p className="font-bold text-lg mb-1">⏳ Payment Being Processed</p>
-                <p className="text-sm">Your subscription will be activated once payment is confirmed. Please wait.</p>
-              </div>
-              <SubscribeButton planName="Premium Crafter MVP" disabled={true} />
-            </div>
-          )}
-
-          {status === "none" && (
-            <SubscribeButton planName="Premium Crafter MVP" disabled={false} />
+          {(status === "pending" || status === "none") && (
+            <SubscribeButton planName="Premium Crafter MVP" disabled={false} initialPending={status === "pending"} />
           )}
 
         </div>

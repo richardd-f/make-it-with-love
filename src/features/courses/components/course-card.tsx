@@ -121,12 +121,16 @@ export const CourseCard = ({ course }: { course: ICourse }) => {
           </p>
 
           <div className="flex flex-wrap items-center gap-4 relative z-10" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>
-            <div className="flex items-center gap-1.5">
-              <svg className="w-5 h-5 text-[#f79d1c] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-              <span className="text-base font-semibold text-gray-700">{course.rating.toFixed(1)}</span>
-              <span className="text-sm text-gray-400">({course.totalReviews})</span>
-            </div>
-            <span className="text-gray-300 select-none">•</span>
+            {course.rating > 0 && (
+              <>
+                <div className="flex items-center gap-1.5">
+                  <svg className="w-5 h-5 text-[#f79d1c] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                  <span className="text-base font-semibold text-gray-700">{course.rating.toFixed(1)}</span>
+                  <span className="text-sm text-gray-400">({course.totalReviews})</span>
+                </div>
+                <span className="text-gray-300 select-none">•</span>
+              </>
+            )}
             <div className="flex items-center gap-1.5 text-gray-500">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}><path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a4 4 0 00-5.477-3.722M9 20H4v-2a4 4 0 015.477-3.722M15 7a4 4 0 11-8 0 4 4 0 018 0zm6 4a3 3 0 11-6 0 3 3 0 016 0zm-18 0a3 3 0 116 0 3 3 0 01-6 0z" /></svg>
               <span className="text-sm font-medium">{(course.totalStudents ?? 0).toLocaleString()} enrolled</span>

@@ -17,7 +17,7 @@ export function EnrolledCourseCard({ course }: EnrolledCourseCardProps) {
 
   return (
     <Link
-      href={`/courses/${course.id}`}
+      href={`/courses/${course.id}/learn`}
       className="enrolled-card group flex flex-col bg-white rounded-3xl shadow-lg hover:shadow-2xl transition-all duration-300 cursor-pointer w-[320px] sm:w-[380px] lg:w-[440px] shrink-0 border border-gray-100/60 hover:scale-[1.02] select-none"
       draggable={false}
       style={{ willChange: "transform" }}

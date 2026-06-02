@@ -78,11 +78,13 @@ export const CourseHero = ({ course }: { course: ICourseDetail }) => {
 
           <div className="flex flex-wrap items-center gap-4 sm:gap-6" style={{ fontFamily: 'var(--font-montserrat, Montserrat, sans-serif)' }}>
             <span className="text-lg sm:text-xl text-gray-600 uppercase tracking-widest font-bold">BY {course.author}</span>
-            <div className="flex items-center gap-2">
-              <svg className="w-6 h-6 text-[#f79d1c] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
-              <span className="text-lg sm:text-xl font-bold text-gray-800">{course.rating}</span>
-              <span className="text-gray-400">({course.totalReviews})</span>
-            </div>
+            {course.rating > 0 && (
+              <div className="flex items-center gap-2">
+                <svg className="w-6 h-6 text-[#f79d1c] fill-current" viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2" /></svg>
+                <span className="text-lg sm:text-xl font-bold text-gray-800">{course.rating}</span>
+                <span className="text-gray-400">({course.totalReviews})</span>
+              </div>
+            )}
             <div className="flex items-center gap-2 text-gray-500">
               <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
               <span>{course.totalStudents} enrolled</span>

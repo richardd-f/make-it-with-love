@@ -33,23 +33,6 @@ export const StarterKitCard = ({ starterKit }: { starterKit: IStarterKit }) => {
         ))}
       </ul>
 
-      <div className="flex flex-col sm:flex-row items-center gap-6 p-6 bg-white/60 rounded-2xl border-2 border-white/80">
-         <div className="flex items-center gap-3 w-full sm:w-auto">
-            <svg className="w-8 h-8 text-[#ea7c9d]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 6l3 1m0 0l-3 9a5.002 5.002 0 006.001 0M6 7l3 9M6 7l6-2m6 2l3-1m-3 1l-3 9a5.002 5.002 0 006.001 0M18 7l3 9m-3-9l-6-2m0-2v2m0 16V5m0 16H9m3 0h3" /></svg>
-            <div className="flex flex-col">
-               <span className="text-sm text-gray-500 font-bold uppercase tracking-widest">Weight</span>
-               <span className="text-xl text-gray-800 font-bold">{starterKit.weight}</span>
-            </div>
-         </div>
-         <div className="hidden sm:block w-px h-12 bg-gray-300"></div>
-         <div className="flex items-center gap-3 w-full sm:w-auto">
-            <svg className="w-8 h-8 text-[#32a569]" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" /></svg>
-            <div className="flex flex-col">
-               <span className="text-sm text-gray-500 font-bold uppercase tracking-widest">Est. Delivery</span>
-               <span className="text-xl text-gray-800 font-bold">{starterKit.estimatedDelivery}</span>
-            </div>
-         </div>
-      </div>
     </div>
   );
 };

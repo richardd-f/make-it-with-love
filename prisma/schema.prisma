@@ -255,6 +255,7 @@ model ImageGallery {
   caption      String?
   url          String
   mediaType    String   @default("image") @map("media_type")
+  rating       Int?
   createdAt    DateTime @default(now()) @map("created_at")
   enrollmentId String   @map("enrollment_id")
 

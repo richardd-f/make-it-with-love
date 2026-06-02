@@ -85,6 +85,14 @@ export async function getCourses(
             category: true
           }
         },
+        enrollments: {
+          select: {
+            imageGalleries: {
+              where: { rating: { not: null } },
+              select: { rating: true },
+            },
+          },
+        },
         _count: {
           select: { enrollments: true }
         }
@@ -95,19 +103,23 @@ export async function getCourses(
 
   const totalPages = Math.ceil(total / limit);
 
-  const mappedData: ICourse[] = coursesData.map((course, index) => {
-    // Pick a deterministic decor image based on course id length or index
+  const mappedData: ICourse[] = coursesData.map((course) => {
     const decorIndex = course.id.charCodeAt(0) % DECOR_IMAGES.length;
-    
-    // Map categories to a string
     const categoryName = course.courseCategories[0]?.category.category || "General";
+
+    const allRatings = course.enrollments.flatMap((e) =>
+      e.imageGalleries.map((g) => g.rating).filter((r): r is number => r !== null)
+    );
+    const avgRating = allRatings.length > 0
+      ? Math.round((allRatings.reduce((a, b) => a + b, 0) / allRatings.length) * 10) / 10
+      : 0;
 
     return {
       id: course.id,
       title: course.name,
-      author: "MIWL Instructor", // Default placeholder
-      rating: 5.0,
-      totalReviews: 0,
+      author: "MIWL Instructor",
+      rating: avgRating,
+      totalReviews: allRatings.length,
       totalStudents: course._count.enrollments,
       price: course.price,
       category: categoryName,

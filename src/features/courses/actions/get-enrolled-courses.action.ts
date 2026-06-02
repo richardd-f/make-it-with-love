@@ -38,6 +38,14 @@ export async function getEnrolledCourses(): Promise<IEnrolledCourse[]> {
           videos: {
             select: { id: true },
           },
+          enrollments: {
+            select: {
+              imageGalleries: {
+                where: { rating: { not: null } },
+                select: { rating: true },
+              },
+            },
+          },
         },
       },
     },
@@ -57,16 +65,23 @@ export async function getEnrolledCourses(): Promise<IEnrolledCourse[]> {
     const videoIds = course.videos.map((v) => v.id);
     const watchedCount = videoIds.filter((id) => watchedVideoIds.has(id)).length;
 
+    const allRatings = course.enrollments.flatMap((e) =>
+      e.imageGalleries.map((g) => g.rating).filter((r): r is number => r !== null)
+    );
+    const avgRating = allRatings.length > 0
+      ? Math.round((allRatings.reduce((a, b) => a + b, 0) / allRatings.length) * 10) / 10
+      : 0;
+
     return {
       id: course.id,
       title: course.name,
       author: "MakeitWithLove",
-      rating: 0,
-      totalReviews: 0,
+      rating: avgRating,
+      totalReviews: allRatings.length,
       price: course.price,
       category,
       ageRange: `${course.minAge}+`,
-      thumbnailUrl: getThumbnail(course.id),
+      thumbnailUrl: course.imgUrl || getThumbnail(course.id),
       tags: [],
       description: course.description || "",
       totalVideos: videoIds.length,

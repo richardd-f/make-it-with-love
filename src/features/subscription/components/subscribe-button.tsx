@@ -1,9 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
 import Script from "next/script";
 import { trackEvent } from "@/src/actions/track-event.action";
+import { cancelPendingSubscription } from "../actions/cancel-pending-subscription.action";
 
 declare global {
   interface Window {
@@ -26,6 +27,7 @@ type PaymentState = "idle" | "success" | "pending" | "error";
 interface SubscribeButtonProps {
   planName: string;
   disabled?: boolean;
+  initialPending?: boolean;
 }
 
 const isProduction = process.env.NEXT_PUBLIC_MIDTRANS_IS_PRODUCTION === "true";
@@ -33,12 +35,13 @@ const snapUrl = isProduction
   ? "https://app.midtrans.com/snap/snap.js"
   : "https://app.sandbox.midtrans.com/snap/snap.js";
 
-export function SubscribeButton({ planName, disabled = false }: SubscribeButtonProps) {
+export function SubscribeButton({ planName, disabled = false, initialPending = false }: SubscribeButtonProps) {
   const router = useRouter();
   const [isHovered, setIsHovered] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [paymentState, setPaymentState] = useState<PaymentState>("idle");
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const paymentCompleted = useRef(false);
 
   const handleClick = async () => {
     if (isLoading || disabled) return;
@@ -54,10 +57,10 @@ export function SubscribeButton({ planName, disabled = false }: SubscribeButtonP
     setPaymentState("idle");
     setErrorMessage(null);
 
-    // Track event (fire-and-forget)
     trackEvent("BUY_SUBSCRIPTION_CLICK", planName);
 
-    // Call create-token API
+    await cancelPendingSubscription();
+
     const res = await fetch("/api/midtrans/create-token", { method: "POST" });
 
     if (!res.ok) {
@@ -80,22 +83,29 @@ export function SubscribeButton({ planName, disabled = false }: SubscribeButtonP
     const { token } = await res.json();
     setIsLoading(false);
 
-    // Open Midtrans Snap popup
+    paymentCompleted.current = false;
+
     window.snap.pay(token, {
       onSuccess: () => {
+        paymentCompleted.current = true;
         setPaymentState("success");
         router.refresh();
       },
       onPending: () => {
+        paymentCompleted.current = true;
         setPaymentState("pending");
         router.refresh();
       },
       onError: () => {
+        paymentCompleted.current = true;
         setErrorMessage("Payment failed. Please try again.");
         setPaymentState("error");
       },
-      onClose: () => {
-        // Payment record is already pending even if user closes popup
+      onClose: async () => {
+        if (!paymentCompleted.current) {
+          await cancelPendingSubscription();
+          setPaymentState("idle");
+        }
         router.refresh();
       },
     });

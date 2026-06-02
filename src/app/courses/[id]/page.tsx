@@ -1,5 +1,4 @@
 import React from "react";
-import Link from "next/link";
 import { getCourseDetail } from "@/src/features/courses/actions/get-course-detail.action";
 import { CourseHero } from "@/src/features/courses/components/course-hero";
 import { StarterKitCard } from "@/src/features/courses/components/starter-kit-card";
@@ -19,13 +18,6 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
   }
 
   const galleryPosts = await getGalleryPosts(course.id);
-
-  // Enrolled users go straight to the learning page.
-  // Subscribers (not enrolled) stay here and see a "Start Learning" button.
-  if (course.isOwned) {
-    const { redirect } = await import("next/navigation");
-    redirect(`/courses/${course.id}/learn`);
-  }
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-12">
