@@ -37,3 +37,32 @@ export async function getTeacherEnrollmentStatus(courseId: string): Promise<"PEN
 
   return enrollment?.status ?? null;
 }
+
+export async function withdrawTeachEnrollment(courseId: string): Promise<{ success: boolean; message: string }> {
+  const session = await auth();
+  const userId = session?.user?.id;
+
+  if (!userId || session.user?.role !== "TEACHER") {
+    return { success: false, message: "Only teachers can withdraw from a course." };
+  }
+
+  try {
+    const schedules = await prisma.teacherSchedule.findMany({
+      where: { teacherId: userId, courseId },
+      select: { id: true },
+    });
+    const scheduleIds = schedules.map((s) => s.id);
+
+    if (scheduleIds.length > 0) {
+      await prisma.meeting.deleteMany({ where: { teacherScheduleId: { in: scheduleIds } } });
+      await prisma.teacherSchedule.deleteMany({ where: { id: { in: scheduleIds } } });
+    }
+
+    await prisma.teacherEnrollment.deleteMany({ where: { teacherId: userId, courseId } });
+
+    revalidatePath("/teacher");
+    return { success: true, message: "Enrollment withdrawn successfully." };
+  } catch {
+    return { success: false, message: "Failed to withdraw enrollment." };
+  }
+}

@@ -2,8 +2,12 @@ import Link from "next/link";
 import { Carousel } from "@/src/features/home/components/Carousel";
 import { getCourses } from "@/src/features/courses/actions/get-courses.action";
 import { CourseCard } from "@/src/features/courses/components/course-card";
+import { auth } from "@/src/auth";
 
 export default async function Home() {
+  const session = await auth();
+  const isTeacher = session?.user?.role === "TEACHER";
+
   const carouselImages = [
     { src: "/images/home/carousel/dtf2.webp", alt: "DTF" },
     { src: "/images/home/carousel/dtf3.webp", alt: "DTF" },
@@ -37,9 +41,9 @@ export default async function Home() {
           <p className="text-lg sm:text-xl text-foreground/80 max-w-xl font-sans" style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}>
             The ultimate creative playground for young artists! We believe that the best things in life are handmade. Our platform provides a curated library of high-quality, kid-friendly video tutorials that turn screen time into &quot;hands-on&quot; time.
           </p>
-          <Link href="/courses">
+          <Link href={isTeacher ? "/teacher" : "/courses"}>
             <button className="mt-4 px-10 py-4 bg-[#ea7c9d] hover:bg-[#e4552c] text-white font-bold text-3xl rounded-full hover:scale-105 transition-all shadow-xl font-family-papernotes tracking-widest leading-none flex items-center justify-center">
-              lets learn!!
+              {isTeacher ? "lets teach!!" : "lets learn!!"}
             </button>
           </Link>
         </div>

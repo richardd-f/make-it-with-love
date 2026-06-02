@@ -37,3 +37,41 @@ export async function updateTeacherEnrollmentStatus(
     return { success: false, message: "Failed to update status." };
   }
 }
+
+export async function unenrollTeacherFromCourse(
+  enrollmentId: string
+): Promise<{ success: boolean; message: string }> {
+  const session = await auth();
+  if (session?.user?.role !== "ADMIN") {
+    return { success: false, message: "Unauthorized." };
+  }
+
+  try {
+    const enrollment = await prisma.teacherEnrollment.findUnique({
+      where: { id: enrollmentId },
+      select: { teacherId: true, courseId: true },
+    });
+
+    if (!enrollment) {
+      return { success: false, message: "Enrollment not found." };
+    }
+
+    const schedules = await prisma.teacherSchedule.findMany({
+      where: { teacherId: enrollment.teacherId, courseId: enrollment.courseId },
+      select: { id: true },
+    });
+    const scheduleIds = schedules.map((s) => s.id);
+
+    if (scheduleIds.length > 0) {
+      await prisma.meeting.deleteMany({ where: { teacherScheduleId: { in: scheduleIds } } });
+      await prisma.teacherSchedule.deleteMany({ where: { id: { in: scheduleIds } } });
+    }
+
+    await prisma.teacherEnrollment.delete({ where: { id: enrollmentId } });
+
+    revalidatePath("/admin/teacher-enrollments");
+    return { success: true, message: "Teacher unenrolled from course." };
+  } catch {
+    return { success: false, message: "Failed to unenroll teacher." };
+  }
+}
