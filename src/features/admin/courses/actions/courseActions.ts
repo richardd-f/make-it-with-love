@@ -75,7 +75,18 @@ export async function updateCourse(courseId: string, prevState: any, formData: F
 
 export async function deleteCourse(courseId: string) {
   try {
-    await prisma.course.delete({ where: { id: courseId } });
+    await prisma.$transaction([
+      prisma.userVideo.deleteMany({ where: { video: { courseId } } }),
+      prisma.video.deleteMany({ where: { courseId } }),
+      prisma.teacherSchedule.deleteMany({ where: { courseId } }),
+      prisma.teacherEnrollment.deleteMany({ where: { courseId } }),
+      prisma.enrollment.deleteMany({ where: { courseId } }),
+      prisma.wishlist.deleteMany({ where: { courseId } }),
+      prisma.cart.deleteMany({ where: { courseId } }),
+      prisma.courseKit.deleteMany({ where: { courseId } }),
+      prisma.courseCategory.deleteMany({ where: { courseId } }),
+      prisma.course.delete({ where: { id: courseId } }),
+    ]);
   } catch (error) {
     console.error('Error deleting course', error);
     return { error: 'Failed to delete course' };
