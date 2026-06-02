@@ -39,7 +39,7 @@ export default async function LearnPage({ params }: { params: Promise<{ id: stri
             </svg>
             Gallery
           </Link>
-          <BookZoomButton courseId={course.id} courseTitle={course.title} />
+          <BookZoomButton courseId={course.id} />
           <ShowOffCraftInlineButton courseId={course.id} />
         </div>
       </div>
