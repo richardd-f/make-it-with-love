@@ -45,7 +45,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
           <StarterKitCard starterKit={course.starterKit} />
           
           {/* Curriculum Section */}
-          <CourseCurriculum contents={course.contents} />
+          <CourseCurriculum contents={course.contents} courseId={course.id} isOwned={course.isOwned} />
 
           {/* Student's Gallery Preview Section (Replaces Reviews) */}
           <CourseGalleryPreview posts={galleryPosts} courseId={course.id} />

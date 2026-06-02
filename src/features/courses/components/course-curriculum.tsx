@@ -1,9 +1,16 @@
 "use client";
 
 import React from "react";
+import Link from "next/link";
 import { ICourseContent } from "../interfaces/course.types";
 
-export const CourseCurriculum = ({ contents }: { contents: ICourseContent[] }) => {
+interface CourseCurriculumProps {
+  contents: ICourseContent[];
+  courseId: string;
+  isOwned?: boolean;
+}
+
+export const CourseCurriculum = ({ contents, courseId, isOwned }: CourseCurriculumProps) => {
   return (
     <div className="w-full bg-white rounded-[2rem] p-8 sm:p-10 shadow-lg border-2 border-gray-100 mb-12 relative overflow-hidden active:animate-twitch">
 
@@ -19,41 +26,53 @@ export const CourseCurriculum = ({ contents }: { contents: ICourseContent[] }) =
       </h3>
 
       <div className="flex flex-col gap-4 relative z-10">
-        {contents.map((content, idx) => (
-          <div
-            key={content.id}
-            className={`flex items-center justify-between p-6 rounded-2xl border-2 transition-all ${content.isLocked ? 'bg-gray-50 border-gray-200 cursor-pointer active:animate-twitch' : 'bg-white border-[#32a569]/30 hover:border-[#32a569] hover:shadow-md cursor-pointer active:animate-twitch'}`}
-          >
-            <div className="flex items-center gap-6">
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-family-papernotes shadow-sm flex-shrink-0 ${content.isLocked ? 'bg-gray-200 text-gray-400' : 'bg-[#32a569]/10 text-[#32a569]'}`}>
-                {idx + 1}
-              </div>
-              <div className="flex flex-col gap-1">
-                <span className={`text-xl font-bold font-sans ${content.isLocked ? 'text-gray-400' : 'text-gray-800'}`}>
-                  {content.title}
-                </span>
-                {content.description && (
-                  <span className={`text-sm font-normal font-sans ${content.isLocked ? 'text-gray-300' : 'text-gray-500'}`}>
-                    {content.description.length > 100
-                      ? content.description.slice(0, 100) + "…"
-                      : content.description}
-                  </span>
-                )}
-                <span className="text-gray-400 font-medium text-xs flex items-center gap-2 uppercase tracking-widest font-sans">
-                  {content.duration}
-                </span>
-              </div>
-            </div>
+        {contents.map((content, idx) => {
+          const canNavigate = isOwned && !content.isLocked;
+          const itemClass = `flex items-center justify-between p-6 rounded-2xl border-2 transition-all ${content.isLocked ? 'bg-gray-50 border-gray-200' : 'bg-white border-[#32a569]/30 hover:border-[#32a569] hover:shadow-md cursor-pointer active:animate-twitch'}`;
 
-            <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-inner flex-shrink-0 ${content.isLocked ? 'bg-gray-200 text-gray-400' : 'bg-[#32a569] text-white hover:scale-110 transition-transform'}`}>
-              {content.isLocked ? (
-                <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm-2 7h10v6H7v-6z" clipRule="evenodd" /></svg>
-              ) : (
-                <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
-              )}
+          const inner = (
+            <>
+              <div className="flex items-center gap-6">
+                <div className={`w-12 h-12 rounded-xl flex items-center justify-center text-2xl font-family-papernotes shadow-sm flex-shrink-0 ${content.isLocked ? 'bg-gray-200 text-gray-400' : 'bg-[#32a569]/10 text-[#32a569]'}`}>
+                  {idx + 1}
+                </div>
+                <div className="flex flex-col gap-1">
+                  <span className={`text-xl font-bold font-sans ${content.isLocked ? 'text-gray-400' : 'text-gray-800'}`}>
+                    {content.title}
+                  </span>
+                  {content.description && (
+                    <span className={`text-sm font-normal font-sans ${content.isLocked ? 'text-gray-300' : 'text-gray-500'}`}>
+                      {content.description.length > 100
+                        ? content.description.slice(0, 100) + "…"
+                        : content.description}
+                    </span>
+                  )}
+                  <span className="text-gray-400 font-medium text-xs flex items-center gap-2 uppercase tracking-widest font-sans">
+                    {content.duration}
+                  </span>
+                </div>
+              </div>
+
+              <div className={`w-12 h-12 rounded-full flex items-center justify-center shadow-inner flex-shrink-0 ${content.isLocked ? 'bg-gray-200 text-gray-400' : 'bg-[#32a569] text-white hover:scale-110 transition-transform'}`}>
+                {content.isLocked ? (
+                  <svg className="w-6 h-6" fill="currentColor" viewBox="0 0 24 24"><path fillRule="evenodd" d="M12 2C9.243 2 7 4.243 7 7v3H6a2 2 0 00-2 2v8a2 2 0 002 2h12a2 2 0 002-2v-8a2 2 0 00-2-2h-1V7c0-2.757-2.243-5-5-5zM9 7c0-1.654 1.346-3 3-3s3 1.346 3 3v3H9V7zm-2 7h10v6H7v-6z" clipRule="evenodd" /></svg>
+                ) : (
+                  <svg className="w-6 h-6 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z" /></svg>
+                )}
+              </div>
+            </>
+          );
+
+          return canNavigate ? (
+            <Link key={content.id} href={`/courses/${courseId}/learn/${content.id}`} className={itemClass}>
+              {inner}
+            </Link>
+          ) : (
+            <div key={content.id} className={itemClass}>
+              {inner}
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );
