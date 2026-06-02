@@ -11,14 +11,14 @@ export default async function TeacherHomePage() {
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-12">
-      <div className="mb-10">
+      <div className="mb-10 animate-fade-in">
         <h1 className="text-6xl font-family-papernotes text-gray-800 mb-2">All Courses</h1>
         <p className="text-gray-500 font-sans text-lg">
           Browse available courses and enroll to teach.
         </p>
       </div>
 
-      <div className="flex flex-col gap-6">
+      <div className="flex flex-col gap-6 animate-fade-in delay-200">
         {courses.map((course) => (
           <div
             key={course.id}

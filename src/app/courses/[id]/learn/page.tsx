@@ -19,7 +19,7 @@ export default async function LearnPage({ params }: { params: Promise<{ id: stri
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8 py-12 flex flex-col items-center">
-      <div className="text-center mb-12">
+      <div className="text-center mb-12 animate-fade-in">
         <h1 className="font-family-papernotes text-5xl sm:text-6xl text-[#32a569] drop-shadow-md mb-4">
           {course.title} Journey
         </h1>
@@ -44,7 +44,9 @@ export default async function LearnPage({ params }: { params: Promise<{ id: stri
         </div>
       </div>
 
-      <CourseLearningPath course={course} />
+      <div className="w-full animate-fade-in delay-200">
+        <CourseLearningPath course={course} />
+      </div>
     </main>
   );
 }

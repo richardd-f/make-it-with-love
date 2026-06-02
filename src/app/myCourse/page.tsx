@@ -13,7 +13,7 @@ export default async function MyCoursesPage() {
   return (
     <main className="min-h-screen relative z-10 flex flex-col items-center">
       {/* Hero Title */}
-      <div className="pt-24 pb-8 text-center px-4">
+      <div className="pt-24 pb-8 text-center px-4 animate-fade-in">
         <h1 className="font-family-papernotes text-5xl sm:text-6xl md:text-7xl text-[#32a569] drop-shadow-md">
           My Art &amp; Craft Journey
         </h1>
@@ -27,11 +27,11 @@ export default async function MyCoursesPage() {
 
       {/* Carousel or Empty State */}
       {courses.length > 0 ? (
-        <div className="w-full max-w-7xl pb-20">
+        <div className="w-full max-w-7xl pb-20 animate-fade-in delay-200">
           <EnrolledCoursesCarousel courses={courses} />
         </div>
       ) : (
-        <div className="flex flex-col items-center gap-6 py-20 px-4 text-center">
+        <div className="flex flex-col items-center gap-6 py-20 px-4 text-center animate-fade-in delay-200">
           <div className="w-24 h-24 rounded-full bg-[#32a569]/10 flex items-center justify-center">
             <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#32a569" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" />

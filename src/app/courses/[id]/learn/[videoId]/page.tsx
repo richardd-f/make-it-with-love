@@ -33,7 +33,7 @@ export default async function VideoPage({
   return (
     <main className="min-h-screen relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8 py-12">
       {/* Breadcrumbs */}
-      <div className="mb-8">
+      <div className="mb-8 animate-fade-in">
         <BreadcrumbList
           items={[
             { label: "My Courses", href: "/myCourse" },
@@ -43,7 +43,7 @@ export default async function VideoPage({
         />
       </div>
 
-      <div className="flex flex-col gap-8">
+      <div className="flex flex-col gap-8 animate-fade-in delay-100">
         {/* Title & Video */}
         <div className="bg-white rounded-[32px] p-6 shadow-xl border border-gray-100">
           <h1 className="font-family-papernotes text-4xl text-gray-800 mb-6 px-2">

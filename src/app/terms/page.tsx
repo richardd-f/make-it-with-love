@@ -9,8 +9,8 @@ export default function TermsPage() {
       <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-[#f6e5c4] rounded-full mix-blend-multiply filter blur-[80px] opacity-60 -z-10"></div>
       <div className="absolute bottom-40 left-0 w-[300px] h-[300px] bg-[#ea7c9d] rounded-full mix-blend-multiply filter blur-[80px] opacity-30 -z-10"></div>
 
-      <div className="w-full max-w-4xl bg-white/80 backdrop-blur-xl p-8 sm:p-12 md:p-16 rounded-[3rem] shadow-xl border-4 border-white">
-        
+      <div className="w-full max-w-4xl bg-white/80 backdrop-blur-xl p-8 sm:p-12 md:p-16 rounded-[3rem] shadow-xl border-4 border-white animate-fade-in">
+
         {/* Header */}
         <div className="text-center mb-16">
           <h1 className="font-family-papernotes text-5xl sm:text-6xl text-[#32a569] drop-shadow-sm mb-4">

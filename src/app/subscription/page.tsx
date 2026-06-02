@@ -8,7 +8,7 @@ export default async function SubscriptionPage() {
     <main className="min-h-screen relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8 py-12 flex flex-col items-center">
 
       {/* Header */}
-      <div className="text-center mb-16 animate-fade-in">
+      <div className="text-center mb-16 animate-fade-in" style={{ animationDelay: "0ms" }}>
         <h1 className="font-family-papernotes text-5xl sm:text-7xl text-[#f79d1c] drop-shadow-md mb-4">
           Join the Creator&apos;s Club!
         </h1>
@@ -18,7 +18,7 @@ export default async function SubscriptionPage() {
       </div>
 
       {/* Pricing Card */}
-      <div className="w-full max-w-lg relative animate-fade-in [animation-delay:200ms]">
+      <div className="w-full max-w-lg relative animate-fade-in delay-200">
 
         {/* Decorative blobs */}
         <div className="absolute -top-10 -left-10 w-32 h-32 bg-[#ea7c9d] rounded-full mix-blend-multiply filter blur-xl opacity-70 animate-blob"></div>

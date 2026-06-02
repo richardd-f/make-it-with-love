@@ -35,7 +35,7 @@ export default async function TeacherCoursesSchedulePage({
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-12">
-      <div className="mb-8">
+      <div className="mb-8 animate-fade-in">
         <BreadcrumbList
           items={[
             { label: "Teacher", href: "/teacher" },
@@ -45,11 +45,13 @@ export default async function TeacherCoursesSchedulePage({
         />
       </div>
 
+      <div className="animate-fade-in delay-200">
       <TeacherScheduleBoard
         courseId={courseId}
         courseTitle={course.name}
         initialSchedules={serialized}
       />
+      </div>
     </main>
   );
 }

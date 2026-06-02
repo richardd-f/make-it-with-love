@@ -15,14 +15,14 @@ export default async function AdminDiyKitsPage() {
     <main className="relative flex-1 p-6 md:p-12 w-full max-w-7xl mx-auto flex flex-col md:flex-row gap-8 min-h-[calc(100vh-100px)]">
       
       {/* Left Column: Form */}
-      <div className="w-full md:w-1/3 z-10">
+      <div className="w-full md:w-1/3 z-10 animate-fade-in">
         <div className="sticky top-12">
           <DiyKitForm />
         </div>
       </div>
 
       {/* Right Column: List */}
-      <div className="w-full md:w-2/3 flex flex-col gap-6 z-10">
+      <div className="w-full md:w-2/3 flex flex-col gap-6 z-10 animate-fade-in delay-200">
         <h1 className="text-5xl font-family-papernotes text-[var(--color-orange)] drop-shadow-sm mb-4">Manage DIY Kits</h1>
         
         <div className="flex flex-wrap gap-4">

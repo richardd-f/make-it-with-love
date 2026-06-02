@@ -17,7 +17,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8 py-12 flex flex-col">
-      <div className="mb-8">
+      <div className="mb-8 animate-fade-in">
         <Link
           href={`/courses/${course.id}/learn`}
           className="inline-flex items-center gap-2 text-gray-500 hover:text-[#e4552c] transition-colors font-medium mb-6"
@@ -38,7 +38,7 @@ export default async function SchedulePage({ params }: { params: Promise<{ id: s
         </p>
       </div>
 
-      <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/40 p-4 sm:p-8 w-full">
+      <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/40 p-4 sm:p-8 w-full animate-fade-in delay-200">
         <SchedulingBoard courseId={course.id} />
       </div>
     </main>

@@ -15,12 +15,12 @@ export default async function AdminCoursesPage() {
 
   return (
     <main className="relative flex-1 p-6 md:p-12 w-full max-w-7xl mx-auto flex flex-col gap-8 min-h-[calc(100vh-100px)]">
-      <div className="flex justify-between items-center z-50">
+      <div className="flex justify-between items-center z-50 animate-fade-in">
         <h1 className="text-5xl font-family-papernotes text-[var(--color-pink)]">Manage Courses</h1>
         <CreateCourseModal />
       </div>
 
-      <div className="flex flex-wrap gap-6 z-10">
+      <div className="flex flex-wrap gap-6 z-10 animate-fade-in delay-200">
         {courses.map(course => (
           <Link key={course.id} href={`/admin/courses/${course.id}`} className="relative group flex flex-col bg-white/60 backdrop-blur-sm p-6 rounded-3xl border border-white/50 shadow hover:shadow-xl hover:scale-[1.02] transition-all w-full md:w-[calc(50%-12px)] lg:w-[calc(33.333%-16px)]">
             <DeleteCourseButton courseId={course.id} courseName={course.name} />

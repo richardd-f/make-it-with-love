@@ -37,13 +37,13 @@ export default async function AdminAnalyticsPage() {
       style={{ fontFamily: "var(--font-montserrat, Montserrat, sans-serif)" }}
     >
       {/* Header */}
-      <div>
+      <div className="animate-fade-in">
         <h1 className="font-family-papernotes text-5xl text-[#32a569] mb-2">MVP Analytics Dashboard</h1>
         <p className="text-gray-500 text-lg">Track user interest and engagement across MakeitWithLove.</p>
       </div>
 
       {/* Top-level KPI Row */}
-      <div className="flex flex-wrap gap-6">
+      <div className="flex flex-wrap gap-6 animate-fade-in delay-100">
         {[
           { label: "Total Users", value: totalUsers, color: "#32a569" },
           { label: "Registered", value: totalRegistered, color: "#f79d1c" },

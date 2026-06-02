@@ -11,13 +11,13 @@ export default async function TeacherCoursesPage() {
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-12">
-      <div className="mb-10">
+      <div className="mb-10 animate-fade-in">
         <h1 className="text-6xl font-family-papernotes text-gray-800 mb-2">My Teaching Courses</h1>
         <p className="text-gray-500 font-sans text-lg">Courses you are approved to teach.</p>
       </div>
 
       {courses.length === 0 ? (
-        <div className="flex flex-col items-center gap-6 py-24">
+        <div className="flex flex-col items-center gap-6 py-24 animate-fade-in delay-200">
           <div className="text-7xl">📚</div>
           <h2 className="text-3xl font-family-papernotes text-gray-500">No accepted courses yet</h2>
           <p className="text-gray-400 text-center max-w-md font-sans">
@@ -31,7 +31,7 @@ export default async function TeacherCoursesPage() {
           </Link>
         </div>
       ) : (
-        <div className="flex flex-wrap gap-6">
+        <div className="flex flex-wrap gap-6 animate-fade-in delay-200">
           {courses.map((course) => (
             <Link
               key={course.id}

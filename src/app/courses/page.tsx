@@ -14,7 +14,7 @@ export default function CoursesPage() {
 
       {/* Scattered Decorations */}
       {/* Header Section */}
-      <div className="pt-20 pb-16 relative z-10 w-full text-center">
+      <div className="pt-20 pb-16 relative z-10 w-full text-center animate-fade-in">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-center mb-6">
             <BreadcrumbList
@@ -33,7 +33,7 @@ export default function CoursesPage() {
         </div>
       </div>
 
-      <div className="relative z-20 pb-20">
+      <div className="relative z-20 pb-20 animate-fade-in delay-200">
         <CoursesExplorer />
       </div>
     </div >

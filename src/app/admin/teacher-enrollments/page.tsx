@@ -11,7 +11,7 @@ export default async function AdminTeacherEnrollmentsPage() {
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-12">
-      <div className="mb-10">
+      <div className="mb-10 animate-fade-in">
         <h1 className="text-5xl font-family-papernotes text-gray-800 mb-2">Teacher Requests</h1>
         <p className="text-gray-500 font-sans">Review and manage teacher enrollment requests.</p>
       </div>
@@ -21,7 +21,7 @@ export default async function AdminTeacherEnrollmentsPage() {
           No requests yet.
         </div>
       ) : (
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-4 animate-fade-in delay-200">
           {enrollments.map((e) => (
             <div
               key={e.id}

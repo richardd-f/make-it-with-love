@@ -46,7 +46,7 @@ export default async function Home() {
       </section>
 
       {/* 2. Vision & Mission */}
-      <section className="w-full bg-white/60 backdrop-blur-md py-24 border-y border-white/40 mb-32">
+      <section className="w-full bg-white/60 backdrop-blur-md py-24 border-y border-white/40 mb-32 animate-fade-in delay-200">
         <div className="max-w-6xl mx-auto px-4 sm:px-8 flex flex-col md:flex-row gap-16 items-center">
           <div className="w-full md:w-1/2">
             <h2 className="font-family-papernotes text-5xl sm:text-6xl text-[#ea7c9d] mb-6 drop-shadow-sm">
@@ -70,7 +70,7 @@ export default async function Home() {
       </section>
 
       {/* 3. Featured Courses */}
-      <section className="w-full max-w-5xl px-4 sm:px-8 mb-32 flex flex-col items-center">
+      <section className="w-full max-w-5xl px-4 sm:px-8 mb-32 flex flex-col items-center animate-fade-in delay-400">
         <div className="text-center mb-12 relative">
           <div className="absolute -top-6 -left-10 w-16 h-16 bg-[#32a569] rounded-full mix-blend-multiply opacity-20 filter blur-xl"></div>
           <h2 className="font-family-papernotes text-5xl sm:text-6xl text-[#32a569] drop-shadow-sm">

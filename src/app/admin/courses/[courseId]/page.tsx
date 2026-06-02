@@ -49,13 +49,15 @@ export default async function AdminCourseDetailPage(props: { params: Promise<{ c
 
   return (
     <main className="flex-1 p-6 md:p-12 w-full max-w-4xl mx-auto flex flex-col items-center">
-      <div className="w-full flex justify-between items-center mb-6">
+      <div className="w-full flex justify-between items-center mb-6 animate-fade-in">
         <Link href="/admin/courses" className="text-[var(--color-pink)] font-bold hover:underline">
           &larr; Back to Courses
         </Link>
       </div>
 
-      <CourseForm course={course || undefined} />
+      <div className="w-full animate-fade-in delay-100">
+        <CourseForm course={course || undefined} />
+      </div>
       
       {!isNew && (
         <>

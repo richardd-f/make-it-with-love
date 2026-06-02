@@ -18,13 +18,13 @@ export default async function MyMeetingsPage() {
 
   return (
     <main className="min-h-screen relative z-10 w-full max-w-5xl mx-auto px-4 sm:px-8 py-12">
-      <div className="mb-10">
+      <div className="mb-10 animate-fade-in">
         <h1 className="text-6xl font-family-papernotes text-gray-800 mb-2">My Meetings</h1>
         <p className="text-gray-500 font-sans text-lg">Your booked online sessions with teachers.</p>
       </div>
 
       {meetings.length === 0 ? (
-        <div className="flex flex-col items-center gap-6 py-24">
+        <div className="flex flex-col items-center gap-6 py-24 animate-fade-in delay-200">
           <div className="text-8xl">📅</div>
           <h2 className="text-3xl font-family-papernotes text-gray-500">No meetings booked yet</h2>
           <p className="text-gray-400 font-sans text-center max-w-md">
@@ -38,7 +38,7 @@ export default async function MyMeetingsPage() {
           </Link>
         </div>
       ) : (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 animate-fade-in delay-200">
           {meetings.map((meeting) => {
             const isUpcoming = new Date(meeting.startTime) > now;
             const isToday =

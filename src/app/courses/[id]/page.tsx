@@ -23,7 +23,7 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
     <main className="min-h-screen relative z-10 w-full max-w-7xl mx-auto px-4 sm:px-8 py-12">
       
       {/* Breadcrumbs */}
-      <div className="mb-8">
+      <div className="mb-8 animate-fade-in">
         <BreadcrumbList 
           items={[
             { label: "Home", href: "/" },
@@ -34,10 +34,12 @@ export default async function CourseDetailPage({ params }: { params: Promise<{ i
       </div>
 
       {/* Hero Unit spanning full width on top */}
-      <CourseHero course={course} />
+      <div className="animate-fade-in delay-100">
+        <CourseHero course={course} />
+      </div>
 
       {/* Split layout: Details Main vs Sidebar CTA */}
-      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative items-start">
+      <div className="flex flex-col lg:flex-row gap-8 lg:gap-12 relative items-start animate-fade-in delay-300">
         
         {/* Main Content Column */}
         <div className="flex-1 w-full min-w-0 flex flex-col gap-12">
