@@ -1,71 +1,80 @@
 "use client";
 
-import React, { useState, useEffect, useMemo } from "react";
+import React, { useState, useEffect, useMemo, useCallback } from "react";
 import { toast } from "react-toastify";
-import { getAvailableSlots, bookAppointment } from "../actions/scheduling.action";
+import { getCourseAvailableSlots, bookAppointment } from "../actions/scheduling.action";
 import { ITimeSlotGroup, ITimeSlot } from "../interfaces/scheduling.types";
-import { DateCarousel } from "./date-carousel";
+import { CalendarMonth, localDateKey } from "./calendar-month";
 import { TimeSlotList } from "./time-slot-list";
 import { BookingModal } from "./booking-modal";
 
+function startOfMonth(date: Date): Date {
+  return new Date(date.getFullYear(), date.getMonth(), 1);
+}
+
 export function SchedulingBoard({ courseId }: { courseId: string }) {
-  const [selectedDate, setSelectedDate] = useState<Date>(new Date());
-  const [groups, setGroups] = useState<ITimeSlotGroup[]>([]);
+  const [slots, setSlots] = useState<ITimeSlot[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  
+  const [selectedDate, setSelectedDate] = useState<Date>(() => {
+    const d = new Date();
+    d.setHours(0, 0, 0, 0);
+    return d;
+  });
+  const [viewDate, setViewDate] = useState<Date>(() => startOfMonth(new Date()));
+
   // Selection & Modal State
   const [selectedSlot, setSelectedSlot] = useState<ITimeSlot | null>(null);
   const [isModalOpen, setIsModalOpen] = useState<boolean>(false);
   const [isBooking, setIsBooking] = useState<boolean>(false);
-  const [bookedSlotId, setBookedSlotId] = useState<string | null>(null);
 
-  // Generate the next 30 days for the carousel
-  const carouselDates = useMemo(() => {
-    const dates: Date[] = [];
-    const today = new Date();
-    today.setHours(0, 0, 0, 0); // Normalize to start of day
-
-    for (let i = 0; i < 30; i++) {
-      const d = new Date(today);
-      d.setDate(today.getDate() + i);
-      dates.push(d);
-    }
-    return dates;
-  }, []);
-
-  // Fetch slots whenever the selected date changes
-  useEffect(() => {
-    let isMounted = true;
+  const loadSlots = useCallback(() => {
     setIsLoading(true);
+    return getCourseAvailableSlots(courseId)
+      .then((data) => setSlots(data))
+      .catch((err) => console.error("Failed to load slots:", err))
+      .finally(() => setIsLoading(false));
+  }, [courseId]);
 
-    getAvailableSlots(courseId, selectedDate.toISOString())
-      .then((data) => {
-        if (isMounted) {
-          setGroups(data);
-          setIsLoading(false);
-        }
-      })
-      .catch((err) => {
-        console.error("Failed to load slots:", err);
-        if (isMounted) setIsLoading(false);
-      });
+  useEffect(() => {
+    loadSlots();
+  }, [loadSlots]);
 
-    return () => {
-      isMounted = false;
-    };
-  }, [courseId, selectedDate]);
+  // Local date keys (YYYY-MM-DD) that have at least one available slot.
+  const daysWithSlots = useMemo(
+    () => new Set(slots.map((s) => localDateKey(new Date(s.startTime)))),
+    [slots]
+  );
+
+  // Slots for the selected day, grouped by their start–end time label.
+  const groups = useMemo<ITimeSlotGroup[]>(() => {
+    const key = localDateKey(selectedDate);
+    const daySlots = slots.filter((s) => localDateKey(new Date(s.startTime)) === key);
+
+    const timeMap = new Map<string, ITimeSlot[]>();
+    for (const s of daySlots) {
+      const start = new Date(s.startTime);
+      const end = new Date(s.endTime);
+      const label = `${start.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })} - ${end.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}`;
+      if (!timeMap.has(label)) timeMap.set(label, []);
+      timeMap.get(label)!.push(s);
+    }
+
+    return Array.from(timeMap.entries()).map(([timeLabel, slotList]) => ({
+      timeLabel,
+      startTime: slotList[0].startTime,
+      slots: slotList,
+    }));
+  }, [slots, selectedDate]);
+
+  const currentMonthStart = startOfMonth(new Date());
+  const canGoPrev = viewDate > currentMonthStart;
 
   const handleSelectDate = (date: Date) => {
     setSelectedDate(date);
-    // Don't reset booked slot if they are just browsing dates, 
-    // but maybe we want to visual clear selectedSlot if it's not booked yet
     setSelectedSlot(null);
   };
 
   const handleSelectSlot = (slot: ITimeSlot) => {
-    // If it's already booked, maybe prevent re-booking or show warning
-    if (bookedSlotId === slot.id) return;
-    
     setSelectedSlot(slot);
     setIsModalOpen(true);
   };
@@ -77,9 +86,11 @@ export function SchedulingBoard({ courseId }: { courseId: string }) {
     try {
       const result = await bookAppointment(selectedSlot.id, courseId);
       if (result.success) {
-        setBookedSlotId(selectedSlot.id);
         setIsModalOpen(false);
+        setSelectedSlot(null);
         toast.success(result.message);
+        // Refetch so the now-booked slot drops out of the available list.
+        await loadSlots();
       } else {
         toast.error(result.message);
       }
@@ -90,20 +101,35 @@ export function SchedulingBoard({ courseId }: { courseId: string }) {
     }
   };
 
+  const selectedDateLabel = selectedDate.toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
-    <div className="w-full flex flex-col items-center">
-      <DateCarousel 
-        dates={carouselDates} 
-        selectedDate={selectedDate} 
-        onSelectDate={handleSelectDate} 
+    <div className="w-full flex flex-col">
+      <CalendarMonth
+        viewDate={viewDate}
+        selectedDate={selectedDate}
+        daysWithSlots={daysWithSlots}
+        onSelectDate={handleSelectDate}
+        onPrevMonth={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() - 1, 1))}
+        onNextMonth={() => setViewDate(new Date(viewDate.getFullYear(), viewDate.getMonth() + 1, 1))}
+        canGoPrev={canGoPrev}
       />
 
-      <div className="w-full mt-4">
-        <TimeSlotList 
-          groups={groups} 
-          selectedSlotId={bookedSlotId || selectedSlot?.id || null} 
-          onSelectSlot={handleSelectSlot} 
-          isLoading={isLoading} 
+      <div className="w-full mt-8 border-t-2 border-gray-100 pt-6">
+        <h3
+          className="font-family-papernotes text-2xl text-[#32a569] mb-4"
+        >
+          {selectedDateLabel}
+        </h3>
+        <TimeSlotList
+          groups={groups}
+          selectedSlotId={selectedSlot?.id || null}
+          onSelectSlot={handleSelectSlot}
+          isLoading={isLoading}
         />
       </div>
 
