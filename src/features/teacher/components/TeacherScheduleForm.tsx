@@ -13,6 +13,20 @@ export function TeacherScheduleForm({ courseId, onCreated }: { courseId: string;
     const formData = new FormData(e.currentTarget);
     formData.set("courseId", courseId);
 
+    // `datetime-local` yields a zone-less wall-clock string (e.g. "2026-06-10T08:30").
+    // Parse it here in the browser — where the teacher's timezone is known — into a
+    // real UTC instant, so the stored time is correct regardless of the server's zone.
+    const startRaw = formData.get("startTime") as string;
+    const endRaw = formData.get("endTime") as string;
+    const start = new Date(startRaw);
+    const end = new Date(endRaw);
+    if (isNaN(start.getTime()) || isNaN(end.getTime())) {
+      toast.error("Please enter a valid start and end time.");
+      return;
+    }
+    formData.set("startTime", start.toISOString());
+    formData.set("endTime", end.toISOString());
+
     startTransition(async () => {
       const result = await createTeacherSchedule(formData);
       if (result.success) {
