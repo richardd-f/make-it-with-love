@@ -107,11 +107,16 @@ export function SchedulingBoard({ courseId }: { courseId: string }) {
         />
       </div>
 
-      <BookingModal 
+      <BookingModal
         isOpen={isModalOpen}
         slot={selectedSlot}
         onConfirm={handleConfirmBooking}
-        onCancel={() => setIsModalOpen(false)}
+        onCancel={() => {
+          setIsModalOpen(false);
+          // Clear the pending selection so the slot button reverts to "Select"
+          // instead of staying on "Selected ✓" for an unbooked slot.
+          setSelectedSlot(null);
+        }}
         isBooking={isBooking}
       />
     </div>
