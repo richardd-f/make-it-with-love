@@ -47,17 +47,21 @@ export async function bookMeeting(
     return { success: false, message: "You have no meeting quota left." };
   }
 
+  // A slot can be attended by many users, but a single user may only book it once.
+  const existingMeeting = await prisma.meeting.findFirst({
+    where: { enrollmentId: enrollment.id, teacherScheduleId },
+  });
+
+  if (existingMeeting) {
+    return { success: false, message: "You have already booked this slot." };
+  }
+
   await prisma.$transaction(async (tx) => {
     await tx.meeting.create({
       data: {
         enrollmentId: enrollment.id,
         teacherScheduleId,
       },
-    });
-
-    await tx.teacherSchedule.update({
-      where: { id: teacherScheduleId },
-      data: { status: "BOOKED" },
     });
 
     if (hasCourseQuota) {

@@ -31,6 +31,7 @@ export default async function TeacherCoursesSchedulePage({
     startTime: s.startTime,
     endTime: s.endTime,
     createdAt: s.createdAt,
+    bookingCount: s._count.meetings,
   }));
 
   return (

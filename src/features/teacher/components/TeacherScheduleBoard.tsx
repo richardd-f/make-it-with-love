@@ -12,6 +12,7 @@ type Schedule = {
   endTime: Date;
   meetingUrl: string;
   status: string;
+  bookingCount: number;
 };
 
 export function TeacherScheduleBoard({
@@ -104,7 +105,7 @@ export function TeacherScheduleBoard({
                 <div
                   key={s.id}
                   className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-5 rounded-2xl border-2 ${
-                    s.status === "BOOKED"
+                    s.bookingCount > 0
                       ? "bg-gray-50 border-gray-200"
                       : "bg-white border-[#32a569]/30 hover:border-[#32a569]"
                   }`}
@@ -128,15 +129,17 @@ export function TeacherScheduleBoard({
                   <div className="flex items-center gap-3">
                     <span
                       className={`px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest ${
-                        s.status === "BOOKED"
+                        s.bookingCount > 0
                           ? "bg-[#e4552c]/10 text-[#e4552c] border border-[#e4552c]/30"
                           : "bg-[#32a569]/10 text-[#32a569] border border-[#32a569]/30"
                       }`}
                     >
-                      {s.status}
+                      {s.bookingCount > 0
+                        ? `${s.bookingCount} booked`
+                        : "Available"}
                     </span>
 
-                    {s.status !== "BOOKED" && (
+                    {s.bookingCount === 0 && (
                       <button
                         onClick={() => setEditingId(s.id)}
                         className="px-4 py-1.5 rounded-full text-xs font-bold uppercase tracking-widest bg-[#f79d1c]/10 text-[#f79d1c] border border-[#f79d1c]/30 hover:bg-[#f79d1c] hover:text-white transition-colors"
@@ -164,8 +167,8 @@ export function TeacherScheduleBoard({
         open={!!deleteTarget}
         title="Delete Schedule"
         message={
-          deleteTarget?.status === "BOOKED"
-            ? "This slot is booked by a student. Deleting it will cancel their meeting and refund their quota. Are you sure?"
+          deleteTarget && deleteTarget.bookingCount > 0
+            ? "This slot has been booked by students. Deleting it will cancel their meetings and refund their quota. Are you sure?"
             : "Are you sure you want to delete this slot?"
         }
         confirmLabel="Yes, delete"

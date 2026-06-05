@@ -84,12 +84,15 @@ export async function updateTeacherSchedule(formData: FormData): Promise<{ succe
     return { success: false, message: "All fields are required." };
   }
 
-  const existing = await prisma.teacherSchedule.findUnique({ where: { id: scheduleId } });
+  const existing = await prisma.teacherSchedule.findUnique({
+    where: { id: scheduleId },
+    include: { _count: { select: { meetings: true } } },
+  });
   if (!existing || existing.teacherId !== userId) {
     return { success: false, message: "Schedule not found." };
   }
-  if (existing.status === "BOOKED") {
-    return { success: false, message: "This slot is already booked and cannot be edited." };
+  if (existing._count.meetings > 0) {
+    return { success: false, message: "A student has already booked this slot and it cannot be edited." };
   }
 
   const startTime = new Date(startTimeStr);
@@ -172,6 +175,7 @@ export async function getTeacherSchedulesForCourse(courseId: string) {
 
   return prisma.teacherSchedule.findMany({
     where: { teacherId: userId, courseId },
+    include: { _count: { select: { meetings: true } } },
     orderBy: { startTime: "asc" },
   });
 }
