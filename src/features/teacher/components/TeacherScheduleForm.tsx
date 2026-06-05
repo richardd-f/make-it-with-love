@@ -1,10 +1,35 @@
 "use client";
 
 import { useTransition, useRef } from "react";
-import { createTeacherSchedule } from "../actions/create-teacher-schedule.action";
+import { createTeacherSchedule, updateTeacherSchedule } from "../actions/create-teacher-schedule.action";
 import { toast } from "react-toastify";
 
-export function TeacherScheduleForm({ courseId, onCreated }: { courseId: string; onCreated: () => void }) {
+type EditableSchedule = {
+  id: string;
+  startTime: Date;
+  endTime: Date;
+  meetingUrl: string;
+};
+
+// Format a Date into a `datetime-local` value ("YYYY-MM-DDTHH:mm") using the
+// browser's local timezone, so an instant stored as UTC pre-fills as wall-clock.
+function toLocalInputValue(date: Date): string {
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+}
+
+export function TeacherScheduleForm({
+  courseId,
+  onCreated,
+  schedule,
+  onCancel,
+}: {
+  courseId: string;
+  onCreated: () => void;
+  schedule?: EditableSchedule;
+  onCancel?: () => void;
+}) {
+  const isEdit = !!schedule;
   const [isPending, startTransition] = useTransition();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -28,7 +53,9 @@ export function TeacherScheduleForm({ courseId, onCreated }: { courseId: string;
     formData.set("endTime", end.toISOString());
 
     startTransition(async () => {
-      const result = await createTeacherSchedule(formData);
+      const result = isEdit
+        ? await updateTeacherSchedule(formData)
+        : await createTeacherSchedule(formData);
       if (result.success) {
         toast.success(result.message);
         formRef.current?.reset();
@@ -45,16 +72,32 @@ export function TeacherScheduleForm({ courseId, onCreated }: { courseId: string;
 
   return (
     <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col gap-4 bg-white rounded-[2rem] p-6 shadow-lg border-2 border-[#f79d1c]/30">
-      <h3 className="font-family-papernotes text-2xl text-[#f79d1c]">Create New Slot</h3>
+      <h3 className="font-family-papernotes text-2xl text-[#f79d1c]">
+        {isEdit ? "Edit Slot" : "Create New Slot"}
+      </h3>
+
+      {isEdit && <input type="hidden" name="scheduleId" value={schedule!.id} />}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
           <label className={labelClass}>Start Time</label>
-          <input className={inputClass} type="datetime-local" name="startTime" required />
+          <input
+            className={inputClass}
+            type="datetime-local"
+            name="startTime"
+            defaultValue={isEdit ? toLocalInputValue(new Date(schedule!.startTime)) : undefined}
+            required
+          />
         </div>
         <div className="flex flex-col gap-1">
           <label className={labelClass}>End Time</label>
-          <input className={inputClass} type="datetime-local" name="endTime" required />
+          <input
+            className={inputClass}
+            type="datetime-local"
+            name="endTime"
+            defaultValue={isEdit ? toLocalInputValue(new Date(schedule!.endTime)) : undefined}
+            required
+          />
         </div>
       </div>
 
@@ -64,18 +107,30 @@ export function TeacherScheduleForm({ courseId, onCreated }: { courseId: string;
           className={inputClass}
           type="url"
           name="meetingUrl"
+          defaultValue={isEdit ? schedule!.meetingUrl : undefined}
           placeholder="https://meet.google.com/xxx-xxxx-xxx"
           required
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={isPending}
-        className="w-full py-3 bg-[#f79d1c] hover:bg-[#e68f12] text-white font-bold rounded-full transition-colors font-family-papernotes text-xl tracking-widest disabled:opacity-60"
-      >
-        {isPending ? "Creating…" : "Create Schedule"}
-      </button>
+      <div className="flex gap-3">
+        {onCancel && (
+          <button
+            type="button"
+            onClick={onCancel}
+            className="flex-1 py-3 bg-gray-100 hover:bg-gray-200 text-gray-600 font-bold rounded-full transition-colors font-family-papernotes text-xl tracking-widest"
+          >
+            Cancel
+          </button>
+        )}
+        <button
+          type="submit"
+          disabled={isPending}
+          className="flex-1 py-3 bg-[#f79d1c] hover:bg-[#e68f12] text-white font-bold rounded-full transition-colors font-family-papernotes text-xl tracking-widest disabled:opacity-60"
+        >
+          {isPending ? "Saving…" : isEdit ? "Save Changes" : "Create Schedule"}
+        </button>
+      </div>
     </form>
   );
 }
