@@ -62,13 +62,13 @@ model Subscription {
 }
 
 model UserSubscription {
-  id                   String   @id @default(uuid()) @map("users_subscriptions")
-  userId               String   @map("user_id")
-  subscriptionId       String   @map("subscription_id")
-  startDate            DateTime @map("start_date")
+  id                   String    @id @default(uuid()) @map("users_subscriptions")
+  userId               String    @map("user_id")
+  subscriptionId       String    @map("subscription_id")
+  startDate            DateTime  @map("start_date")
+  endDate              DateTime? @map("end_date")
   status               String
-  meetingAdditionsLeft Int      @map("meeting_additions_left")
-  coursesClaimedLeft   Int      @default(3) @map("courses_claimed_left")
+  meetingAdditionsLeft Int       @map("meeting_additions_left")
 
   user         User         @relation(fields: [userId], references: [userId])
   subscription Subscription @relation(fields: [subscriptionId], references: [subscriptionId])

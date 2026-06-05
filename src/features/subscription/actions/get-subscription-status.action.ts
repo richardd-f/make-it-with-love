@@ -17,7 +17,10 @@ export async function getSubscriptionStatus(): Promise<{ status: SubscriptionSta
     const subscription = await prisma.userSubscription.findFirst({
       where: {
         userId,
-        status: { in: ["active", "pending"] },
+        OR: [
+          { status: "pending" },
+          { status: "active", endDate: { gt: new Date() } },
+        ],
       },
       orderBy: { startDate: "desc" },
     });

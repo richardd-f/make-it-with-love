@@ -1,4 +1,5 @@
 import { getCourseDetail } from "@/src/features/courses/actions/get-course-detail.action";
+import { ensureSubscriberEnrollment } from "@/src/features/courses/actions/ensure-subscriber-enrollment.action";
 import { notFound, redirect } from "next/navigation";
 import Link from "next/link";
 import { CourseLearningPath } from "../../../../features/courses/components/course-learning-path";
@@ -7,6 +8,8 @@ import { ShowOffCraftInlineButton } from "@/src/features/gallery/components/show
 
 export default async function LearnPage({ params }: { params: Promise<{ id: string }> }) {
   const resolvedParams = await params;
+  // Auto-enroll active subscribers on access so they gain meetings + gallery.
+  await ensureSubscriberEnrollment(resolvedParams.id);
   const course = await getCourseDetail(resolvedParams.id);
 
   if (!course) {

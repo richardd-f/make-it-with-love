@@ -92,10 +92,25 @@ export async function POST(request: NextRequest) {
     } else {
       // 4b. Subscription purchase: activate or cancel
       if (isSuccess) {
-        await prisma.userSubscription.updateMany({
+        const pending = await prisma.userSubscription.findFirst({
           where: { userId: transaction.userId, status: "pending" },
-          data: { status: "active", meetingAdditionsLeft: 2 },
+          include: { subscription: true },
+          orderBy: { startDate: "desc" },
         });
+        if (pending) {
+          const now = new Date();
+          const endDate = new Date(now);
+          endDate.setDate(endDate.getDate() + pending.subscription.duration);
+          await prisma.userSubscription.update({
+            where: { id: pending.id },
+            data: {
+              status: "active",
+              startDate: now,
+              endDate,
+              meetingAdditionsLeft: pending.subscription.meetingAdditions,
+            },
+          });
+        }
       }
       if (isFailure) {
         await prisma.userSubscription.updateMany({

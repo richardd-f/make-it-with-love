@@ -44,8 +44,6 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
 
   let isOwned = false;
   let isSubscribed = false;
-  let canClaim = false;
-  let coursesClaimedLeft = 0;
   let meetingsAmountLeft: number | undefined;
   let subscriptionMeetingsLeft: number | undefined;
   let isWishlisted = false;
@@ -70,7 +68,7 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
     const [enrollment, activeSubscription, wishlist, watchedVideos] = await Promise.all([
       prisma.enrollment.findFirst({ where: { userId, courseId: id } }),
       prisma.userSubscription.findFirst({
-        where: { userId, status: "active" },
+        where: { userId, status: "active", endDate: { gt: new Date() } },
         include: { subscription: true },
       }),
       prisma.wishlist.findFirst({ where: { userId, courseId: id } }),
@@ -91,11 +89,6 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
     }
     if (activeSubscription) {
       subscriptionMeetingsLeft = activeSubscription.meetingAdditionsLeft;
-      coursesClaimedLeft = activeSubscription.coursesClaimedLeft;
-      canClaim =
-        !enrollment &&
-        course.price <= 90000 &&
-        activeSubscription.coursesClaimedLeft > 0;
     }
   }
 
@@ -138,8 +131,6 @@ export async function getCourseDetail(id: string): Promise<ICourseDetail | null>
     totalStudents: course._count.enrollments,
     isOwned,
     isSubscribed,
-    canClaim,
-    coursesClaimedLeft,
     meetingsAmountLeft,
     subscriptionMeetingsLeft,
     amountOfMeeting: course.amountOfMeeting,

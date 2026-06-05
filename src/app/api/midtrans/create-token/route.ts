@@ -14,9 +14,16 @@ export async function POST(_request: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    // 2. Block duplicate active/pending subscriptions
+    // 2. Block duplicate subscriptions: a pending one, or an active one that
+    //    hasn't expired yet. Expired subscriptions can be re-purchased.
     const existing = await prisma.userSubscription.findFirst({
-      where: { userId, status: { in: ["pending", "active"] } },
+      where: {
+        userId,
+        OR: [
+          { status: "pending" },
+          { status: "active", endDate: { gt: new Date() } },
+        ],
+      },
     });
     if (existing) {
       return NextResponse.json(

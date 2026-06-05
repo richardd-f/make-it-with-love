@@ -4,7 +4,6 @@ import React, { useTransition } from "react";
 import { ICourseDetail } from "../interfaces/course.types";
 import { useRouter } from "next/navigation";
 import { trackEvent } from "@/src/actions/track-event.action";
-import { claimCourse } from "../actions/claim-course.action";
 import { addToCart } from "@/src/features/cart/actions/add-to-cart.action";
 import { toast } from "react-toastify";
 
@@ -31,18 +30,6 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
 
   const handleLearnNavigation = () => {
     router.push(`/courses/${course.id}/learn`);
-  };
-
-  const handleClaim = () => {
-    startTransition(async () => {
-      const result = await claimCourse(course.id);
-      if (result.success) {
-        toast.success(result.message);
-        router.refresh();
-      } else {
-        toast.error(result.message);
-      }
-    });
   };
 
   return (
@@ -85,7 +72,7 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
             onClick={handleLearnNavigation}
             className="w-full bg-[#f79d1c] hover:bg-[#e68f12] text-white font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest"
           >
-            Let's Learn
+            Let&apos;s Learn
           </button>
           <a
             href={`/courses/${course.id}/schedule`}
@@ -94,24 +81,16 @@ export const CourseCtaBox = ({ course }: { course: ICourseDetail }) => {
             Book a Meeting
           </a>
         </div>
-      ) : course.isSubscribed && !course.canClaim ? (
-        <button
-          onClick={handleLearnNavigation}
-          className="w-full bg-[#f79d1c] hover:bg-[#e68f12] text-white font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest"
-        >
-          Start Learning!
-        </button>
-      ) : course.canClaim ? (
+      ) : course.isSubscribed ? (
         <div className="flex flex-col gap-3">
           <button
-            onClick={handleClaim}
-            disabled={isPending}
-            className="w-full bg-[#ea7c9d] hover:bg-[#d86b8b] text-white font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest disabled:opacity-60 disabled:hover:scale-100"
+            onClick={handleLearnNavigation}
+            className="w-full bg-[#f79d1c] hover:bg-[#e68f12] text-white font-bold text-2xl py-5 rounded-full shadow-lg hover:scale-105 transition-all font-family-papernotes uppercase tracking-widest"
           >
-            {isPending ? "Claiming…" : `Claim Free (${course.coursesClaimedLeft} left)`}
+            Start Learning!
           </button>
           <p className="text-white/70 text-xs">
-            Your subscription covers courses up to Rp 90,000
+            Your subscription unlocks every course
           </p>
         </div>
       ) : course.starterKit.inStock ? (

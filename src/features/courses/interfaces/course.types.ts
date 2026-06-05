@@ -63,8 +63,6 @@ export interface ICourseDetail extends ICourse {
   reviews: IReview[];
   isOwned?: boolean;
   isSubscribed?: boolean;
-  canClaim?: boolean;
-  coursesClaimedLeft?: number;
   meetingsAmountLeft?: number;
   subscriptionMeetingsLeft?: number;
   amountOfMeeting?: number;

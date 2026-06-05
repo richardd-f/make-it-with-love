@@ -37,7 +37,7 @@ export async function bookMeeting(
 
   // Check meeting quota: course meetings first, then subscription
   const activeSubscription = await prisma.userSubscription.findFirst({
-    where: { userId, status: "active" },
+    where: { userId, status: "active", endDate: { gt: new Date() } },
   });
 
   const hasCourseQuota = enrollment.meetingsAmountLeft > 0;
