@@ -24,6 +24,16 @@ x-app: &app
   build:
     context: ..
     dockerfile: Dockerfile
+    # Forward the NEXT_PUBLIC_* build-time args the Dockerfile expects.
+    # Values can be empty for a bench-only build (those features aren't
+    # exercised by any benchmark phase), but passing them avoids baking in
+    # wrong values if you later use this image for smoke-testing real pages.
+    args:
+      CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
+      CLOUDINARY_UPLOAD_PRESET: ${CLOUDINARY_UPLOAD_PRESET:-}
+      CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
+      MIDTRANS_CLIENT_KEY: ${MIDTRANS_CLIENT_KEY:-}
+      MIDTRANS_IS_PRODUCTION: ${MIDTRANS_IS_PRODUCTION:-false}
   networks: [bench]
   depends_on:
     db:
@@ -73,7 +83,9 @@ services:
       <<: *app-env
       ENABLE_BENCHMARK_API: "1"
     ports:
-      - "3000:3000"
+      # Bind only to localhost — access via SSH tunnel on a VPS:
+      #   ssh -L 3000:localhost:3000 user@vps
+      - "127.0.0.1:3000:3000"
     depends_on:
       db:
         condition: service_healthy
@@ -101,7 +113,7 @@ services:
       - /var/lib/docker/:/var/lib/docker:ro
       - /dev/disk/:/dev/disk:ro
     ports:
-      - "8080:8080"
+      - "127.0.0.1:8080:8080"
     networks: [bench]
     restart: unless-stopped
 
@@ -116,7 +128,7 @@ services:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - prometheus-data:/prometheus
     ports:
-      - "9090:9090"
+      - "127.0.0.1:9090:9090"
     depends_on:
       - cadvisor
     networks: [bench]
@@ -134,7 +146,7 @@ services:
       - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
       - grafana-data:/var/lib/grafana
     ports:
-      - "3001:3000"
+      - "127.0.0.1:3001:3000"
     depends_on:
       - prometheus
     networks: [bench]
