@@ -1,0 +1,168 @@
+# Self-contained monitoring + load-benchmark rig.
+#
+# Separate from the app's prod docker-compose.yml so production is never forced
+# to run any of this. Brings up the whole world on a private `bench` network:
+#   db -> migrate -> seed -> web  (the app under test, built from ../Dockerfile)
+#   cadvisor -> prometheus -> grafana  (the observability stack)
+#   k6  (on-demand only, via the `bench` profile — never auto-starts)
+#
+# cAdvisor watches the Docker daemon, so it sees every container (incl. `web`)
+# regardless of network. Prometheus and k6 reach peers by service name.
+#
+# Usage:
+#   docker compose -f monitoring/docker-compose.monitoring.yml up -d --build
+#   (k6 is launched on demand by scripts/run-phase.ps1 via `compose run k6 ...`)
+
+x-app-env: &app-env
+  DATABASE_URL: postgresql://bench:bench@db:5432/benchdb
+  AUTH_SECRET: bench-only-secret-not-for-production
+  AUTH_TRUST_HOST: "true"
+  NEXT_TELEMETRY_DISABLED: "1"
+
+x-app: &app
+  image: miwl-bench:latest
+  build:
+    context: ..
+    dockerfile: Dockerfile
+  networks: [bench]
+  depends_on:
+    db:
+      condition: service_healthy
+
+services:
+  # ---------------------------------------------------------------- app + db
+  db:
+    image: postgres:16-alpine
+    container_name: miwl-bench-db
+    environment:
+      POSTGRES_USER: bench
+      POSTGRES_PASSWORD: bench
+      POSTGRES_DB: benchdb
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bench -d benchdb"]
+      interval: 3s
+      timeout: 3s
+      retries: 20
+    networks: [bench]
+
+  migrate:
+    <<: *app
+    container_name: miwl-bench-migrate
+    environment: *app-env
+    command: ["prisma", "migrate", "deploy"]
+    restart: "no"
+
+  seed:
+    <<: *app
+    container_name: miwl-bench-seed
+    environment: *app-env
+    # Regenerate the client (same as `prisma db seed` does), then seed the admin
+    # account followed by the additive benchmark fixtures.
+    command: ["sh", "-c", "prisma generate && tsx prisma/seed.ts && tsx prisma/seed.bench.ts"]
+    depends_on:
+      db:
+        condition: service_healthy
+      migrate:
+        condition: service_completed_successfully
+    restart: "no"
+
+  web:
+    <<: *app
+    container_name: miwl-bench-web
+    environment:
+      <<: *app-env
+      ENABLE_BENCHMARK_API: "1"
+    ports:
+      - "3000:3000"
+    depends_on:
+      db:
+        condition: service_healthy
+      seed:
+        condition: service_completed_successfully
+    # Fixed CPU ceiling so "peak CPU" and "max RPS" are reproducible run-to-run.
+    # Matches the prod compose budget; adjust to taste (see BENCHMARK.md).
+    deploy:
+      resources:
+        limits:
+          cpus: "0.90"
+    restart: unless-stopped
+
+  # ------------------------------------------------------------ observability
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:v0.49.1
+    container_name: miwl-bench-cadvisor
+    privileged: true
+    devices:
+      - /dev/kmsg
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:ro
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/disk/:/dev/disk:ro
+    ports:
+      - "8080:8080"
+    networks: [bench]
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:v2.54.1
+    container_name: miwl-bench-prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--web.enable-remote-write-receiver"
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - prometheus-data:/prometheus
+    ports:
+      - "9090:9090"
+    depends_on:
+      - cadvisor
+    networks: [bench]
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:11.2.0
+    container_name: miwl-bench-grafana
+    environment:
+      GF_SECURITY_ADMIN_USER: admin
+      GF_SECURITY_ADMIN_PASSWORD: admin
+      GF_USERS_ALLOW_SIGN_UP: "false"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+      - grafana-data:/var/lib/grafana
+    ports:
+      - "3001:3000"
+    depends_on:
+      - prometheus
+    networks: [bench]
+    restart: unless-stopped
+
+  # ------------------------------------------------------------ load generator
+  # On-demand only: the `bench` profile keeps it out of `up`. Launched by
+  # run-phase.ps1, e.g.:
+  #   docker compose -f monitoring/docker-compose.monitoring.yml \
+  #     run --rm -e MODE=rps -e RPS=50 -e DURATION=30s k6 run /scripts/light.js
+  k6:
+    image: grafana/k6:0.53.0
+    container_name: miwl-bench-k6
+    profiles: ["bench"]
+    environment:
+      BASE_URL: http://web:3000
+      BENCH_EMAIL: bench@makeitwithlove.com
+      BENCH_PASSWORD: Bench@12345
+    volumes:
+      - ./k6:/scripts:ro
+      - ./results:/results
+    networks: [bench]
+
+networks:
+  bench:
+    name: miwl-bench
+    driver: bridge
+
+volumes:
+  prometheus-data:
+  grafana-data:

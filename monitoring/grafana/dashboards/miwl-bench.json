@@ -1,0 +1,114 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "graphTooltip": 1,
+  "title": "MIWL Benchmark",
+  "uid": "miwl-bench",
+  "tags": ["benchmark", "miwl"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "refresh": "5s",
+  "time": { "from": "now-15m", "to": "now" },
+  "templating": {
+    "list": [
+      {
+        "name": "container",
+        "label": "Container",
+        "type": "query",
+        "datasource": { "type": "prometheus", "uid": "prometheus" },
+        "query": { "query": "label_values(container_memory_usage_bytes, name)", "refId": "vars" },
+        "regex": "/miwl-bench.*/",
+        "current": { "text": "miwl-bench-web", "value": "miwl-bench-web" },
+        "includeAll": false,
+        "multi": false,
+        "refresh": 2,
+        "sort": 1
+      }
+    ]
+  },
+  "panels": [
+    {
+      "id": 1,
+      "title": "RAM usage (idle = value at rest)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "container_memory_usage_bytes{name=\"$container\"}",
+          "legendFormat": "memory usage"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "title": "CPU usage (cores)",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "fieldConfig": { "defaults": { "unit": "none", "decimals": 3 }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(container_cpu_usage_seconds_total{name=\"$container\"}[1m])",
+          "legendFormat": "cpu cores"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "title": "Network I/O",
+      "type": "timeseries",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "Bps" }, "overrides": [] },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "rate(container_network_receive_bytes_total{name=\"$container\"}[1m])",
+          "legendFormat": "rx"
+        },
+        {
+          "refId": "B",
+          "expr": "rate(container_network_transmit_bytes_total{name=\"$container\"}[1m])",
+          "legendFormat": "tx"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "title": "RAM idle (current)",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "bytes" }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "container_memory_usage_bytes{name=\"$container\"}",
+          "legendFormat": "ram"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "title": "Peak CPU (15m window)",
+      "type": "stat",
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 8 },
+      "fieldConfig": { "defaults": { "unit": "none", "decimals": 3 }, "overrides": [] },
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "colorMode": "value" },
+      "targets": [
+        {
+          "refId": "A",
+          "expr": "max_over_time(rate(container_cpu_usage_seconds_total{name=\"$container\"}[30s])[15m:5s])",
+          "legendFormat": "peak cpu"
+        }
+      ]
+    }
+  ]
+}
