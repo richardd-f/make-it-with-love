@@ -9,7 +9,7 @@
 [CmdletBinding()]
 param(
   [string]$Service = 'web',
-  [string]$Url = 'http://localhost:3000/privacy',
+  [string]$Url = 'http://localhost:3000/',
   [int]$TimeoutSec = 120
 )
 

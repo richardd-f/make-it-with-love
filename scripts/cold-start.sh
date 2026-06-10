@@ -4,7 +4,7 @@
 set -euo pipefail
 
 SERVICE="${SERVICE:-web}"
-URL="${1:-http://localhost:3000/privacy}"
+URL="${1:-http://localhost:3000/}"
 TIMEOUT="${2:-120}"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"

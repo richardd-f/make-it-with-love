@@ -6,12 +6,14 @@
 #   cadvisor -> prometheus -> grafana  (the observability stack)
 #   k6  (on-demand only, via the `bench` profile — never auto-starts)
 #
-# cAdvisor watches the Docker daemon, so it sees every container (incl. `web`)
-# regardless of network. Prometheus and k6 reach peers by service name.
+# All ports bind to 127.0.0.1 — access Grafana/Prometheus/cAdvisor from your
+# local machine via SSH tunnel:
+#   ssh -L 3000:localhost:3000 -L 3001:localhost:3001 \
+#       -L 9090:localhost:9090 -L 8080:localhost:8080 user@vps
 #
-# Usage:
-#   docker compose -f monitoring/docker-compose.monitoring.yml up -d --build
-#   (k6 is launched on demand by scripts/run-phase.ps1 via `compose run k6 ...`)
+# Resource limits mirror the Laravel benchmark rig so comparisons are fair.
+# k6 is capped at 10 VUs regardless of target RPS; without this cap k6 has
+# previously frozen the server.
 
 x-app-env: &app-env
   DATABASE_URL: postgresql://bench:bench@db:5432/benchdb
@@ -25,15 +27,12 @@ x-app: &app
     context: ..
     dockerfile: Dockerfile
     # Forward the NEXT_PUBLIC_* build-time args the Dockerfile expects.
-    # Values can be empty for a bench-only build (those features aren't
-    # exercised by any benchmark phase), but passing them avoids baking in
-    # wrong values if you later use this image for smoke-testing real pages.
+    # Values can be empty for a bench-only build — Cloudinary/upload features
+    # are not exercised by any benchmark phase.
     args:
       CLOUDINARY_CLOUD_NAME: ${CLOUDINARY_CLOUD_NAME:-}
       CLOUDINARY_UPLOAD_PRESET: ${CLOUDINARY_UPLOAD_PRESET:-}
       CLOUDINARY_API_KEY: ${CLOUDINARY_API_KEY:-}
-      MIDTRANS_CLIENT_KEY: ${MIDTRANS_CLIENT_KEY:-}
-      MIDTRANS_IS_PRODUCTION: ${MIDTRANS_IS_PRODUCTION:-false}
   networks: [bench]
   depends_on:
     db:
@@ -66,8 +65,6 @@ services:
     <<: *app
     container_name: miwl-bench-seed
     environment: *app-env
-    # Regenerate the client (same as `prisma db seed` does), then seed the admin
-    # account followed by the additive benchmark fixtures.
     command: ["sh", "-c", "prisma generate && tsx prisma/seed.ts && tsx prisma/seed.bench.ts"]
     depends_on:
       db:
@@ -83,16 +80,13 @@ services:
       <<: *app-env
       ENABLE_BENCHMARK_API: "1"
     ports:
-      # Bind only to localhost — access via SSH tunnel on a VPS:
-      #   ssh -L 3000:localhost:3000 user@vps
       - "127.0.0.1:3000:3000"
     depends_on:
       db:
         condition: service_healthy
       seed:
         condition: service_completed_successfully
-    # Fixed CPU ceiling so "peak CPU" and "max RPS" are reproducible run-to-run.
-    # Matches the prod compose budget; adjust to taste (see BENCHMARK.md).
+    # 0.90 cores matches the prod compose budget; keeps CPU results reproducible.
     deploy:
       resources:
         limits:
@@ -116,6 +110,11 @@ services:
       - "127.0.0.1:8080:8080"
     networks: [bench]
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.20"
+          memory: 128M
 
   prometheus:
     image: prom/prometheus:v2.54.1
@@ -123,6 +122,7 @@ services:
     command:
       - "--config.file=/etc/prometheus/prometheus.yml"
       - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=7d"
       - "--web.enable-remote-write-receiver"
     volumes:
       - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
@@ -133,6 +133,11 @@ services:
       - cadvisor
     networks: [bench]
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.30"
+          memory: 256M
 
   grafana:
     image: grafana/grafana:11.2.0
@@ -151,12 +156,20 @@ services:
       - prometheus
     networks: [bench]
     restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: "0.20"
+          memory: 128M
 
   # ------------------------------------------------------------ load generator
   # On-demand only: the `bench` profile keeps it out of `up`. Launched by
-  # run-phase.ps1, e.g.:
+  # run-phase.sh / run-phase.ps1, e.g.:
   #   docker compose -f monitoring/docker-compose.monitoring.yml \
-  #     run --rm -e MODE=rps -e RPS=50 -e DURATION=30s k6 run /scripts/light.js
+  #     run --rm -e MODE=rps -e RPS=10 -e DURATION=30s k6 run /scripts/light.js
+  #
+  # Hard-capped at 10 VUs (enforced in k6/lib/options.js) to prevent k6 from
+  # starving the app and freezing the VPS.
   k6:
     image: grafana/k6:0.53.0
     container_name: miwl-bench-k6
@@ -169,6 +182,11 @@ services:
       - ./k6:/scripts:ro
       - ./results:/results
     networks: [bench]
+    deploy:
+      resources:
+        limits:
+          cpus: "0.50"
+          memory: 256M
 
 networks:
   bench:
