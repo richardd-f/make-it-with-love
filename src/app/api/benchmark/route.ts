@@ -20,9 +20,9 @@ function disabled() {
 async function getBenchUserId(): Promise<string | null> {
   const user = await prisma.user.findFirst({
     where: { email: BENCH_EMAIL },
-    select: { id: true },
+    select: { userId: true },
   });
-  return user?.id ?? null;
+  return user?.userId ?? null;
 }
 
 // CREATE
