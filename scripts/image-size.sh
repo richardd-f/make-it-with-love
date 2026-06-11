@@ -11,11 +11,11 @@ if [ -z "$bytes" ]; then
   echo "  docker compose -f monitoring/docker-compose.monitoring.yml build web" >&2
   exit 1
 fi
-mb=$(echo "scale=1; $bytes/1048576" | bc)
+mb=$(awk -v b="$bytes" 'BEGIN { printf "%.1f", b/1048576 }')
 echo "Docker image '$IMAGE': ${mb} MB"
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 if [ -d "$REPO_ROOT/.next" ]; then
   next_kb=$(du -sk "$REPO_ROOT/.next" | cut -f1)
-  echo ".next build output : $(echo "scale=1; $next_kb/1024" | bc) MB"
+  echo ".next build output : $(awk -v k="$next_kb" 'BEGIN { printf "%.1f", k/1024 }') MB"
 fi

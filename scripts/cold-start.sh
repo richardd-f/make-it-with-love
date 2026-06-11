@@ -14,18 +14,18 @@ echo "Recreating '$SERVICE' and timing first HTTP 200 at $URL ..."
 docker compose -f "$COMPOSE" up -d --force-recreate --no-deps "$SERVICE"
 
 start=$(date +%s.%N)
-deadline=$(echo "$start + $TIMEOUT" | bc)
+deadline=$(awk -v s="$start" -v t="$TIMEOUT" 'BEGIN { printf "%.6f", s + t }')
 ready=0
-while (( $(echo "$(date +%s.%N) < $deadline" | bc -l) )); do
+while awk -v now="$(date +%s.%N)" -v dl="$deadline" 'BEGIN { exit !(now < dl) }'; do
   code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 3 "$URL" || true)
   if [ "$code" = "200" ]; then ready=1; break; fi
   sleep 0.25
 done
 end=$(date +%s.%N)
-elapsed=$(echo "$end - $start" | bc)
+elapsed=$(awk -v e="$end" -v s="$start" 'BEGIN { printf "%.2f", e - s }')
 
 if [ "$ready" = "1" ]; then
-  printf 'Cold start: %.2f s\n' "$elapsed"
+  echo "Cold start: ${elapsed} s"
 else
   echo "Did not reach HTTP 200 within ${TIMEOUT}s" >&2
   exit 1
