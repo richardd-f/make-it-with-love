@@ -1,39 +1,39 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { auth } from '@/src/auth';
 import prisma from '@/src/lib/prisma';
 
 /**
  * Benchmark-only CRUD endpoint — exists solely for the load-test "hard" phase.
  *
- * It performs a real authenticated Create -> Read -> Update -> Delete cycle
- * against Postgres via Prisma (using the throwaway UserAction tracking model,
- * which has no unique constraints and is safe to churn). This exercises the same
- * stack a real mutation does (NextAuth session check + Prisma write) without
- * adding a user-facing feature or mutating real domain data.
- *
- * Inert unless ENABLE_BENCHMARK_API=1, so it is a no-op (404) in production.
- * Gated by the real NextAuth session cookie, so k6 must complete the genuine
- * credentials login flow first.
+ * Exercises a real Create -> Read -> Update -> Delete cycle against Postgres via
+ * Prisma (UserAction model, no unique constraints, safe to churn). No session
+ * auth required — the ENABLE_BENCHMARK_API=1 env gate keeps this inert (404)
+ * in production. Rows are keyed to the bench seed account looked up by email.
  */
 
 const ENABLED = process.env.ENABLE_BENCHMARK_API === '1';
+const BENCH_EMAIL = process.env.BENCH_EMAIL ?? 'bench@makeitwithlove.com';
 
 function disabled() {
   return NextResponse.json({ error: 'Not found' }, { status: 404 });
 }
 
-async function requireUser() {
-  const session = await auth();
-  const userId = session?.user?.id;
-  if (!userId) return null;
-  return userId;
+async function getBenchUserId(): Promise<string | null> {
+  const user = await prisma.user.findFirst({
+    where: { email: BENCH_EMAIL },
+    select: { id: true },
+  });
+  return user?.id ?? null;
 }
 
 // CREATE
 export async function POST() {
   if (!ENABLED) return disabled();
-  const userId = await requireUser();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const userId = await getBenchUserId();
+  if (!userId)
+    return NextResponse.json(
+      { error: 'Bench user not found — run the bench seed first' },
+      { status: 503 }
+    );
 
   const row = await prisma.userAction.create({
     data: { action: 'benchmark', details: 'created', userId },
@@ -44,8 +44,12 @@ export async function POST() {
 // READ
 export async function GET(request: NextRequest) {
   if (!ENABLED) return disabled();
-  const userId = await requireUser();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const userId = await getBenchUserId();
+  if (!userId)
+    return NextResponse.json(
+      { error: 'Bench user not found — run the bench seed first' },
+      { status: 503 }
+    );
 
   const id = request.nextUrl.searchParams.get('id');
   if (id) {
@@ -65,8 +69,12 @@ export async function GET(request: NextRequest) {
 // UPDATE
 export async function PUT(request: NextRequest) {
   if (!ENABLED) return disabled();
-  const userId = await requireUser();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const userId = await getBenchUserId();
+  if (!userId)
+    return NextResponse.json(
+      { error: 'Bench user not found — run the bench seed first' },
+      { status: 503 }
+    );
 
   const id = request.nextUrl.searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });
@@ -84,8 +92,12 @@ export async function PUT(request: NextRequest) {
 // DELETE (self-cleaning)
 export async function DELETE(request: NextRequest) {
   if (!ENABLED) return disabled();
-  const userId = await requireUser();
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  const userId = await getBenchUserId();
+  if (!userId)
+    return NextResponse.json(
+      { error: 'Bench user not found — run the bench seed first' },
+      { status: 503 }
+    );
 
   const id = request.nextUrl.searchParams.get('id');
   if (!id) return NextResponse.json({ error: 'Missing id' }, { status: 400 });

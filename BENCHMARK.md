@@ -51,10 +51,9 @@ Seeded benchmark account: `bench@makeitwithlove.com` / `Bench@12345`
 
 ---
 
-## ⚠️ Smoke-test the hard-phase auth first
+## ⚠️ Smoke-test the hard phase first
 
-The most fragile part is the NextAuth credentials login in the hard phase.
-Verify it before running any real tests:
+Verify the bench API is reachable before running any real tests:
 
 ```bash
 docker compose -f monitoring/docker-compose.monitoring.yml run --rm \
@@ -63,8 +62,9 @@ docker compose -f monitoring/docker-compose.monitoring.yml run --rm \
 ```
 
 All 5 checks must pass (`home 200`, `create 201`, `read 200`, `update 200`,
-`delete 200`) with `errors: 0.00%`. If `create` returns 401, the login flow
-failed — check `AUTH_SECRET` and `ENABLE_BENCHMARK_API=1` on the `web` service.
+`delete 200`) with `errors: 0.00%`. If `create` returns 503, the bench seed
+hasn't run — check `docker compose ... logs seed`. If it returns 404, confirm
+`ENABLE_BENCHMARK_API=1` is set on the `web` service.
 
 ---
 
@@ -281,7 +281,7 @@ Fill in after completing all 12 steps:
 |---|---|---|
 | **light** | `GET /` | Landing page, no auth, no image fetching. |
 | **medium** | `GET /` + images | Same page; parses HTML and batch-fetches every image URL found (incl. `/_next/image` optimized URLs). |
-| **hard** | login + `GET /` + CRUD | NextAuth credentials login (once per VU), browse home, then `POST→GET→PUT→DELETE /api/benchmark` — self-cleaning. |
+| **hard** | `GET /` + CRUD | Browse home, then `POST→GET→PUT→DELETE /api/benchmark` — self-cleaning. No session auth required on the bench endpoint. |
 
 k6 modes (env `MODE`):
 - `rps` — `constant-arrival-rate`; env `RPS`, `DURATION`. Used for Max RPS sweep.
